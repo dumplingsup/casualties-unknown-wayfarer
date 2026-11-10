@@ -20,7 +20,7 @@ namespace WayfarerMech
         private float closeGuardUntil;
         private int partPage;
         private const int PartsPerPage = 7;
-        private Rect panel = new Rect(18, 64, 760, 560);
+        private Rect panel = new Rect(18, 40, 880, 620);
 
         private static readonly string[] SlotNames = { "机体 BODY", "左臂 LMB", "右臂 RMB", "腿 LEGS", "推进器 BOOSTER", "喇叭 HORN" };
 
@@ -143,7 +143,15 @@ namespace WayfarerMech
         private void OnGUI()
         {
             if (!IsOpen || !Plugin.Ready || !Plugin.Mech || draft == null) return;
-            GUI.depth = 0;
+            GUI.depth = -20;
+            // Keep the logical layout readable at smaller window sizes.
+            var previousMatrix = GUI.matrix;
+            float uiScale = Mathf.Min(1f, Mathf.Min(Screen.width / 920f, Screen.height / 700f));
+            GUI.matrix = Matrix4x4.Scale(new Vector3(uiScale, uiScale, 1f));
+            try
+            {
+            GUI.DrawTexture(panel, Texture2D.whiteTexture, ScaleMode.StretchToFill, false, 0f,
+                new Color(0.07f, 0.085f, 0.10f, 0.97f), 0f, 0f);
             GUI.Box(panel, "");
             GUI.Label(new Rect(panel.x + 14, panel.y + 8, 600, 26), "<b>WAYFARER ASSEMBLY  /  模块机甲装配</b>");
             if (GUI.Button(new Rect(panel.x + panel.width - 92, panel.y + 8, 78, 24), "关闭 X"))
@@ -156,7 +164,7 @@ namespace WayfarerMech
                 "Enter 应用 / P/Esc 取消 · 应用前检查新机体净空 · 驾驶中不可换装");
 
             float leftX = panel.x + 14;
-            float leftY = panel.y + 58;
+            float leftY = panel.y + 82;
             for (int i = 0; i < 6; i++)
             {
                 var slot = (MechSlot)i;
@@ -174,7 +182,7 @@ namespace WayfarerMech
             }
 
             float midX = panel.x + 178;
-            float midY = panel.y + 58;
+            float midY = panel.y + 82;
             var parts = Candidates(selectedSlot);
             int pages = Mathf.Max(1, (parts.Count + PartsPerPage - 1) / PartsPerPage);
             partPage = Mathf.Clamp(partPage, 0, pages - 1);
@@ -211,32 +219,31 @@ namespace WayfarerMech
             }
 
             float rightX = panel.x + 548;
-            float rightY = panel.y + 58;
+            float rightY = panel.y + 60;
+            GUI.Label(new Rect(rightX, rightY, 310, 22), "当前机体 / LIVE PREVIEW");
+            AssemblyPreview.Draw(new Rect(rightX, rightY + 26, 310, 230), Plugin.Mech);
             var stats = MechCatalog.Combine(draft);
-            GUI.Label(new Rect(rightX, rightY, 190, 24), "<b>属性 / STATS</b>");
-            GUI.Label(new Rect(rightX, rightY + 26, 200, 150),
+            GUI.Label(new Rect(rightX, rightY + 264, 310, 24), "属性 / STATS");
+            GUI.Label(new Rect(rightX, rightY + 290, 150, 100),
                 "速度 ×" + stats.MoveMul.ToString("0.00") + "\n" +
                 "跳跃 ×" + stats.JumpMul.ToString("0.00") + "\n" +
+                "质量 " + stats.Mass.ToString("0"));
+            GUI.Label(new Rect(rightX + 156, rightY + 290, 150, 100),
                 "推力 ×" + stats.ThrustMul.ToString("0.00") + "\n" +
-                "升力 ×" + stats.RiseMul.ToString("0.00") + "\n" +
-                "质量 " + stats.Mass.ToString("0") + "\n" +
-                "机体 " + (stats.Body != null ? stats.Body.Id : "?") + "\n" +
-                "左臂 " + (stats.LeftArm != null ? stats.LeftArm.Id : "空") + "\n" +
-                "右臂 " + (stats.RightArm != null ? stats.RightArm.Id : "空"));
-            GUI.Label(new Rect(rightX, rightY + 184, 200, 22), "<b>配色 / PALETTE</b>");
+                "升力 ×" + stats.RiseMul.ToString("0.00"));
+            GUI.Label(new Rect(rightX, rightY + 358, 300, 22), "配色 / PALETTE");
             for (int i = 0; i < MechCatalog.Palettes.Length; i++)
             {
                 string palette = MechCatalog.Palettes[i];
-                bool active = draft.PaletteId == palette;
                 var old = GUI.color;
                 GUI.color = MechCatalog.PalettePrimary[palette];
-                if (GUI.Button(new Rect(rightX + i * 46, rightY + 208, 40, 30), active ? "●" : ""))
-                    SelectPalette(palette);
+                if (GUI.Button(new Rect(rightX + i * 76, rightY + 384, 68, 30),
+                    draft.PaletteId == palette ? "●" : "")) SelectPalette(palette);
                 GUI.color = old;
-                GUI.Label(new Rect(rightX + i * 46, rightY + 238, 44, 18), palette);
+                GUI.Label(new Rect(rightX + i * 76, rightY + 416, 72, 22), palette);
             }
-            GUI.Label(new Rect(rightX, rightY + 268, 200, 100),
-                "实时预览：\n画面中的机甲就是当前草稿。\n应用后写入此角色的存档，\n回收/重新召唤后保持。");
+            GUI.Label(new Rect(panel.x + 14, panel.y + 500, 520, 36),
+                "预览不会保存；应用后写入当前角色存档。取消恢复原配置。");
 
             if (GUI.Button(new Rect(panel.x + panel.width - 250, panel.y + panel.height - 48, 110, 34), "应用 APPLY"))
             {
@@ -252,6 +259,8 @@ namespace WayfarerMech
             }
             if (!string.IsNullOrEmpty(message) && Time.unscaledTime < messageUntil)
                 GUI.Label(new Rect(panel.x + 16, panel.y + panel.height - 42, panel.width - 290, 30), message);
+            }
+            finally { GUI.matrix = previousMatrix; }
         }
 
         private static System.Collections.Generic.List<MechPartDef> Candidates(MechSlot slot)

@@ -13,6 +13,7 @@
 python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 dotnet run --project tests/DrillShapeTests/DrillShapeTests.csproj -c Release
+dotnet run --project tests/SaveRecordTests/SaveRecordTests.csproj -c Release -p:RestoreLockedMode=true
 
 # 替换这两个本机路径；命令只构建，不安装或启动游戏。
 $gameDir = 'D:\SteamLibrary\steamapps\common\Casualties Unknown'

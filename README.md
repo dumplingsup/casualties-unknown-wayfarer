@@ -1,5 +1,8 @@
 # CU Mod Kit：未知伤亡 Mod 工作台
 
+**最新迭代 v0.4.1：** 修复未知存档字段保真，增加明亮的实时装配预览，补充当前资源清单与存档测试。
+验证边界和剩余任务见 [v0.4.1 测试报告](docs/WAYFARER-V0.4.1-TEST-REPORT.md)。
+
 代码管理入口：[构建与协作指南](docs/REPOSITORY.md)；
 [v0.4 纳管审查与待办](docs/WAYFARER-V0.4-REVIEW.md)。当前为开发候选基线。
 源码、原创资源和工具随仓库保存；下文提到的 artifacts/runs/versions 与本机 profile 不随 clone 分发。

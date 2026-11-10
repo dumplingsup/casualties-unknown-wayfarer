@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup><TargetFramework>net48</TargetFramework><LangVersion>latest</LangVersion><AssemblyName>MechProbe</AssemblyName><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile><GameDir>D:\SteamLibrary\steamapps\common\Casualties Unknown</GameDir></PropertyGroup>
+ <PropertyGroup><CoreLibPath Condition="'$(CoreLibPath)' == ''">D:\testGround\_casualties-analysis\moddeps\CUCoreLib.dll</CoreLibPath></PropertyGroup>
  <ItemGroup>
+  <Reference Include="CUCoreLib"><HintPath>$(CoreLibPath)</HintPath><Private>false</Private></Reference>
   <ProjectReference Include="../../src/WayfarerMech/WayfarerMech.csproj" />
   <PackageReference Include="BepInEx.Core" Version="5.4.21" />
   <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />

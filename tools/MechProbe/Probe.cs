@@ -117,6 +117,31 @@ public class Probe : BaseUnityPlugin
         catch (Exception ex) { Logger.LogWarning("PROBE_SHOT_FAILED " + ex.Message); }
     }
 
+    private void AuditSaveRecord(Body body)
+    {
+        var provider = new MechLoadoutSaveProvider();
+        var original = provider.Capture(body);
+        int originalVersion = provider.GetVersion();
+        try
+        {
+            var future = Newtonsoft.Json.Linq.JObject.Parse("{\"schemaVersion\":9,\"body\":\"future_body\",\"opaque\":{\"values\":[1,2,3]}}");
+            provider.Restore(body, future, 7, null);
+            var captured = provider.Capture(body);
+            if (!Newtonsoft.Json.Linq.JToken.DeepEquals(future, captured) || provider.GetVersion() != 7)
+                throw new Exception("Future save record was altered");
+            MechLoadoutStore.Set(body, MechLoadout.Default());
+            captured = provider.Capture(body);
+            if ((int)captured["schemaVersion"] != 1 || provider.GetVersion() != 1 || captured["opaque"] != null)
+                throw new Exception("Explicit apply did not replace future record");
+            provider.Restore(body, new Newtonsoft.Json.Linq.JValue("malformed"), 3, null);
+            if ((string)provider.Capture(body) != "malformed" || provider.GetVersion() != 3)
+                throw new Exception("Malformed record was lost");
+            Logger.LogInfo("PROBE_SAVE_RECORD_PASS futurePayload=True futureEnvelope=True explicitApply=True malformed=True");
+        }
+        catch (Exception ex) { Logger.LogError("PROBE_SAVE_RECORD_FAIL " + ex); }
+        finally { provider.Restore(body, original, originalVersion, null); }
+    }
+
     private void AutoPlay(Body b, MechController m)
     {
         if (!autoPlay || inspectOnly || !Plugin.Ready || b == null) return;
@@ -276,6 +301,7 @@ public class Probe : BaseUnityPlugin
                 Logger.LogInfo("PROBE_SCRIPT_ASSEMBLY_WAIT");
                 break;
             case 17:
+                if (Environment.GetEnvironmentVariable("CU_PROBE_SAVEAUDIT") == "1") AuditSaveRecord(b);
                 if (catalogTest) AuditCatalog();
                 if (AssemblyPanel.IsOpen) ApplyTestLoadout();
                 else Logger.LogInfo("PROBE_SCRIPT_ASSEMBLY_NOT_OPEN");

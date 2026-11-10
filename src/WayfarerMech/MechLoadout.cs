@@ -161,7 +161,7 @@ namespace WayfarerMech
     /// <summary>Per-body loadout store, restored by CUCoreLib's body save provider.</summary>
     public static class MechLoadoutStore
     {
-        private sealed class Holder { public MechLoadout Value; }
+        private sealed class Holder { public MechLoadout Value; public PreservedLoadoutRecord Original; }
         private static readonly ConditionalWeakTable<Body, Holder> table = new ConditionalWeakTable<Body, Holder>();
 
         public static MechLoadout Get(Body body)
@@ -181,6 +181,27 @@ namespace WayfarerMech
         {
             if (!body) return;
             Get(body);
+        }
+
+        public static void Restore(Body body, MechLoadout loadout, JToken payload, int version)
+        {
+            Set(body, loadout);
+            if (body && table.TryGetValue(body, out var holder))
+                holder.Original = new PreservedLoadoutRecord(payload, version);
+        }
+
+        public static JToken Capture(Body body, out int version)
+        {
+            version = 1;
+            if (!body) return null;
+            Get(body);
+            var holder = table.GetValue(body, _ => new Holder { Value = MechLoadout.Default() });
+            if (holder.Original != null)
+            {
+                version = holder.Original.Version;
+                return holder.Original.Capture();
+            }
+            return holder.Value.ToJson();
         }
     }
 }

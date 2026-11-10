@@ -13,17 +13,15 @@ namespace WayfarerMech
     public sealed class MechLoadoutSaveProvider : IBodySaveProvider
     {
         public const string Key = "local.cu.wayfarermech.loadout";
-        private const int Version = 1;
+        private int capturedVersion = 1;
 
-        public int GetVersion() => Version;
+        // CUCoreLib 1.1 calls Capture(body), then GetVersion(), synchronously for
+        // each body. Preserve the envelope version too, including future records.
+        public int GetVersion() => capturedVersion;
 
         public JToken Capture(Body body)
         {
-            if (!body) return null;
-            var loadout = MechLoadoutStore.Get(body);
-            var json = loadout.ToJson();
-            json["equippedAtUtc"] = DateTime.UtcNow.ToString("o");
-            return json;
+            return MechLoadoutStore.Capture(body, out capturedVersion);
         }
 
         public void Restore(Body body, JToken payload, int version, SaveRestoreContext context)
@@ -32,7 +30,12 @@ namespace WayfarerMech
             try
             {
                 var loadout = MechLoadout.FromJson(payload, out int schema, out string error);
-                MechLoadoutStore.Set(body, loadout);
+                if (version > 1)
+                {
+                    loadout = MechLoadout.Default();
+                    error = "provider version " + version + " is newer than this build";
+                }
+                MechLoadoutStore.Restore(body, loadout, payload, version);
                 if (!string.IsNullOrEmpty(error))
                     Plugin.LogInfo("LOADOUT_RESTORE fallback schema=" + schema + " reason=" + error);
                 else
@@ -40,7 +43,7 @@ namespace WayfarerMech
             }
             catch (Exception ex)
             {
-                MechLoadoutStore.Set(body, MechLoadout.Default());
+                MechLoadoutStore.Restore(body, MechLoadout.Default(), payload, version);
                 Plugin.LogError("LOADOUT_RESTORE_EXCEPTION " + ex);
             }
         }

@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace WayfarerMech
 {
-    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.0")]
+    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.1")]
     [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -59,7 +59,7 @@ namespace WayfarerMech
             gameObject.AddComponent<AssemblyPanel>();
             patches = new Harmony(Guid);
             patches.PatchAll(typeof(Plugin).Assembly);
-            LogInfo("Wayfarer 0.4.0 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
+            LogInfo("Wayfarer 0.4.1 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
         }
 
         public static bool Ready => PlayerCamera.main && PlayerCamera.main.body && WorldGeneration.world &&
