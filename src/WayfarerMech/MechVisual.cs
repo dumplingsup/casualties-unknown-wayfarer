@@ -23,6 +23,8 @@ namespace WayfarerMech
             public bool Front;
             public float SolePixels, GroundBlend, GroundError;
             public bool ContactSolved;
+            public bool Planted;
+            public Vector2 Plant;
         }
 
         private sealed class ArmRig
@@ -59,6 +61,10 @@ namespace WayfarerMech
         private readonly ArmRig[] arms = new ArmRig[2];
         private Vector3 torsoBase;
         private float idleTime, walkPhase, walkBlend, jetBlend, airBlend;
+        private Vector3 lastRigPosition;
+        private int gaitDirection;
+        private float bodyLean;
+        private Vector3 boosterBase;
         private float landingTimer, landingImpact, hornTimer;
         private bool thrusting, grounded = true;
         private float velocityX, velocityY;
@@ -85,6 +91,7 @@ namespace WayfarerMech
             VisualRoot.SetParent(root, false);
             VisualRoot.localPosition = Vector3.zero;
             VisualRoot.localRotation = Quaternion.identity;
+            lastRigPosition = root.position;
 
             torsoGroup = new GameObject("torso-group").transform;
             torsoGroup.SetParent(VisualRoot, false);
@@ -122,6 +129,7 @@ namespace WayfarerMech
             booster = new GameObject("booster").transform;
             booster.SetParent(torsoGroup, false);
             booster.localPosition = Px(body.BoosterX, body.BoosterY);
+            boosterBase = booster.localPosition;
             MakeSprite(MechArt.Get(boost.ArtPrefix + "_" + palette), booster, Vector3.zero, 8);
             flameFrames = new[]
             {
@@ -319,6 +327,11 @@ namespace WayfarerMech
         public void SetFacing(int sign)
         {
             if (sign == 0) return;
+            if ((sign > 0 ? 1 : -1) != Facing)
+            {
+                if (frontLeg != null) frontLeg.Planted = false;
+                if (backLeg != null) backLeg.Planted = false;
+            }
             Facing = sign > 0 ? 1 : -1;
             if (VisualRoot) VisualRoot.localScale = new Vector3(Facing, 1f, 1f);
         }
@@ -435,20 +448,35 @@ namespace WayfarerMech
             if (dt <= 0f) return;
             idleTime += dt;
             bool moving = grounded && Mathf.Abs(velocityX) > 0.2f;
-            float targetWalk = moving ? Mathf.Clamp01(Mathf.Abs(velocityX) / 6f) : 0f;
+            float targetWalk = moving ? 1f : 0f;
             walkBlend = Mathf.MoveTowards(walkBlend, targetWalk, dt * 7f);
-            if (moving) walkPhase = Mathf.Repeat(walkPhase + dt * Mathf.Clamp(Mathf.Abs(velocityX) * Ppu / 26f, 0.6f, 5.5f), 1f);
+            float distance = Mathf.Abs(VisualRoot.position.x - lastRigPosition.x) * Ppu;
+            lastRigPosition = VisualRoot.position;
+            int direction = velocityX * Facing >= 0 ? 1 : -1;
+            if (moving && gaitDirection != direction)
+            {
+                frontLeg.Planted = backLeg.Planted = false;
+                gaitDirection = direction;
+            }
+            // Distance, not a minimum animation clock: slow travel takes longer steps,
+            // and blocked movement cannot keep cycling the feet in place.
+            if (moving && distance < 12f)
+                walkPhase = Mathf.Repeat(walkPhase + distance / (float)WalkCycle.CycleDistance, 1f);
             jetBlend = Mathf.MoveTowards(jetBlend, thrusting ? 1f : 0f, dt * 7f);
             airBlend = Mathf.MoveTowards(airBlend, grounded ? 0f : 1f, dt * 5f);
             if (landingTimer > 0f) landingTimer = Mathf.Max(0f, landingTimer - dt);
             if (hornTimer > 0f) hornTimer = Mathf.Max(0f, hornTimer - dt);
 
-            float gaitBob = Mathf.Abs(Mathf.Sin(walkPhase * Mathf.PI * 2f)) * 0.025f * walkBlend;
+            float stepPhase = Mathf.Repeat(walkPhase * 2f, 1f);
+            // Compression at contact, then a slow rise over the planted support foot.
+            float gaitBob = (-4f + 1.2f * Mathf.Sin(stepPhase * Mathf.PI)) / Ppu * walkBlend;
             float idleBob = Mathf.Sin(idleTime * 1.6f) * 0.006f * (1f - walkBlend);
             float land = landingTimer > 0f ? Mathf.Sin(landingTimer / LandingDuration * Mathf.PI) * 0.085f * (0.4f + landingImpact) : 0f;
-            float pitch = -2.5f * jetBlend + Mathf.Sin(walkPhase * Mathf.PI * 2f) * 0.7f * walkBlend;
+            bodyLean = Mathf.MoveTowards(bodyLean, -Mathf.Clamp(velocityX * Facing / 6f, -1f, 1f) * 1.4f, dt * 3f);
+            float pitch = -2.5f * jetBlend + bodyLean * walkBlend;
             torsoGroup.localPosition = torsoBase + new Vector3(0f, gaitBob + idleBob - land, 0f);
             torsoGroup.localRotation = Quaternion.Euler(0, 0, pitch);
+            if (booster) booster.localPosition = boosterBase + Px(0, SuspensionLag(0.10f));
 
             AnimateLeg(backLeg, 0.5f);
             AnimateLeg(frontLeg, 0f);
@@ -493,10 +521,9 @@ namespace WayfarerMech
             leg.GroundError = 0;
             // Stance sweeps under the hip while the swing foot lifts. Ground rays are
             // cosmetic only: no colliders, player state or movement speed are changed.
-            float stride = 6.5f * walkBlend;
-            float sweep = p < 0.5f ? Mathf.Lerp(stride, -stride, p * 2f)
-                : Mathf.Lerp(-stride, stride, (p - 0.5f) * 2f);
-            float lift = p < 0.5f ? 0f : Mathf.Sin((p - 0.5f) * 2f * Mathf.PI) * 4f * walkBlend;
+            var gait = WalkCycle.Evaluate(p);
+            float sweep = (float)gait.Sweep * walkBlend;
+            float lift = (float)gait.Lift * walkBlend;
             sweep *= velocityX * Facing >= 0 ? 1 : -1;
             var hip = leg.Thigh.parent;
             var hipInRig = VisualRoot.InverseTransformPoint(hip.position);
@@ -504,10 +531,22 @@ namespace WayfarerMech
                 -hullBottomPixels / Ppu + 1.1f, 0f));
             var hit = grounded ? Physics2D.Raycast(rayOrigin, Vector2.down, 2.2f, FootGroundMask) : default(RaycastHit2D);
             bool contact = hit && hit.normal.y > 0.4f;
+            bool stance = gait.Stance && walkBlend > 0.98f;
+            if (!stance || !contact) leg.Planted = false;
             leg.GroundBlend = Mathf.MoveTowards(leg.GroundBlend, contact ? 1f : 0f, Time.deltaTime * 12f);
             if (contact)
             {
                 Vector2 targetWorld = hit.point + hit.normal * (leg.SolePixels / Ppu) + Vector2.up * (lift / Ppu);
+                // During support the foot stays at a world-space anchor while the hip
+                // passes over it. Recheck terrain so digging cannot leave a planted foot.
+                if (stance)
+                {
+                    if (!leg.Planted) { leg.Plant = targetWorld; leg.Planted = true; }
+                    var support = Physics2D.Raycast(leg.Plant + Vector2.up * 0.2f,
+                        Vector2.down, leg.SolePixels / Ppu + 0.5f, FootGroundMask);
+                    if (support) targetWorld = leg.Plant;
+                    else leg.Planted = false;
+                }
                 Vector3 local = hip.InverseTransformPoint(targetWorld);
                 var pose = TwoBonePose.Solve(local.x * Ppu, -local.y * Ppu,
                     leg.Part.ThighLen, leg.Part.ShinLen);
@@ -568,7 +607,15 @@ namespace WayfarerMech
                     a.FlashTime -= dt;
                     if (a.FlashTime <= 0f && a.FlashRenderer) a.FlashRenderer.enabled = false;
                 }
+                a.Pivot.localPosition += Px(0, SuspensionLag(0.18f));
             }
+        }
+
+        private float SuspensionLag(float phaseDelay)
+        {
+            float step = Mathf.Repeat(walkPhase * 2f, 1f);
+            float delayed = Mathf.Repeat(step - phaseDelay, 1f);
+            return 0.7f * (Mathf.Sin(step * Mathf.PI) - Mathf.Sin(delayed * Mathf.PI)) * walkBlend;
         }
 
         private void AnimateFlames(float dt)

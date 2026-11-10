@@ -71,7 +71,7 @@ namespace WayfarerMech
         private int sceneDepth;
         private bool originalForceNoMovement;
         private Vector2 pilotSize = new Vector2(2.2f, 4.6f);
-        private float drive, holdTime, nextSafeCheck, nextBreakLog;
+        private float drive, motorVelocity, holdTime, nextSafeCheck, nextBreakLog;
         private bool jumpQueued, requireRelease, thrustRequested, prevGrounded;
         private float prevVelocityY;
 
@@ -305,13 +305,11 @@ namespace WayfarerMech
             bool found;
             if (!emergency)
             {
-                found = MechSafeExit.FindNearby(transform.position, pilotSize, out exit);
-                method = "nearby";
-                if (!found)
-                {
-                    Plugin.Tell("附近没有安全落脚点，请先降落或挖出空间 / No safe landing spot");
-                    return false;
-                }
+                // F is the player's decision, including in mid-air. Prefer body clearance
+                // beside the chassis, but never require a floor or reject the exit.
+                exit = MechSafeExit.ManualExit(transform.position, pilotSize, Visual ? Visual.Facing : 1);
+                found = true;
+                method = "manual";
             }
             else
             {
@@ -403,6 +401,7 @@ namespace WayfarerMech
         private void ResetControls(bool cancelJump)
         {
             drive = 0f;
+            motorVelocity = 0f;
             holdTime = 0f;
             thrustRequested = false;
             ThrustActive = false;
@@ -623,7 +622,14 @@ namespace WayfarerMech
             Vector2 v = Chassis.velocity;
 
             float targetX = active ? drive * MechSettings.MoveSpeed.Value * Stats.MoveMul : 0f;
-            v.x = Mathf.MoveTowards(v.x, targetX, MechSettings.HorizontalAccel.Value * Time.fixedDeltaTime);
+            bool reversing = targetX * motorVelocity < 0f;
+            bool braking = reversing || Mathf.Abs(targetX) < Mathf.Abs(motorVelocity);
+            float acceleration = braking ? MechSettings.HorizontalBrake.Value : MechSettings.HorizontalAccel.Value;
+            // Reversals decelerate to zero first instead of snapping into the opposite drive.
+            // Integrate the drive command separately: contact friction may cancel a
+            // small per-tick velocity, but must not erase all accumulated acceleration.
+            motorVelocity = Mathf.MoveTowards(motorVelocity, reversing ? 0f : targetX, acceleration * Time.fixedDeltaTime);
+            v.x = motorVelocity;
 
             bool wantThrust = active && thrustRequested && !CeilingBlocked;
             ThrustActive = wantThrust;

@@ -12,6 +12,7 @@ namespace WayfarerMech
         public static ConfigEntry<float> MaxFallSpeed;
         public static ConfigEntry<float> MoveSpeed;
         public static ConfigEntry<float> HorizontalAccel;
+        public static ConfigEntry<float> HorizontalBrake;
 
         public static ConfigEntry<float> DrillInterval;
         public static ConfigEntry<float> DrillTerrainDamage;
@@ -32,8 +33,17 @@ namespace WayfarerMech
             ThrustNetAccel = config.Bind("Jetpack", "ThrustNetAccel", 35f, Range("Net upward acceleration while thrusting (gravity compensated).", 5f, 120f));
             MaxRiseSpeed = config.Bind("Jetpack", "MaxRiseSpeed", 26f, Range("Maximum upward speed while thrusting.", 5f, 60f));
             MaxFallSpeed = config.Bind("Jetpack", "MaxFallSpeed", 40f, Range("Maximum downward speed while piloting.", 10f, 80f));
-            MoveSpeed = config.Bind("Ground", "MoveSpeed", 12f, Range("Horizontal speed target while piloting.", 2f, 30f));
-            HorizontalAccel = config.Bind("Ground", "HorizontalAccel", 70f, Range("Horizontal acceleration while piloting.", 10f, 200f));
+            MoveSpeed = config.Bind("Ground", "MoveSpeed", 6f, Range("Heavy chassis horizontal cruise speed.", 2f, 30f));
+            HorizontalAccel = config.Bind("Ground", "HorizontalAccel", 9f, Range("Heavy chassis acceleration (world units/s squared).", 2f, 200f));
+            HorizontalBrake = config.Bind("Ground", "HorizontalBrake", 14f, Range("Braking before a stop or direction reversal.", 2f, 200f));
+            var handlingRevision = config.Bind("Ground", "HandlingRevision", 0, "Internal tuning migration revision.");
+            if (handlingRevision.Value < 1)
+            {
+                // Upgrade untouched legacy defaults, preserving deliberate custom tuning.
+                if (MoveSpeed.Value == 12f) MoveSpeed.Value = 6f;
+                if (HorizontalAccel.Value == 70f) HorizontalAccel.Value = 9f;
+                handlingRevision.Value = 1;
+            }
 
             DrillInterval = config.Bind("Drill", "Interval", 0.10f, Range("Seconds between drill pulses.", 0.03f, 0.5f));
             DrillTerrainDamage = config.Bind("Drill", "TerrainDamage", 2400f, Range("Damage per pulse to each selected terrain cell. Vanilla drops/health are preserved.", 100f, 20000f));

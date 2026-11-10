@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace WayfarerMech
 {
-    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.5")]
+    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.6")]
     [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -35,7 +35,7 @@ namespace WayfarerMech
             Instance = this;
             MechSettings.Bind(Config);
             SummonKey = Config.Bind("Controls", "SummonRecall", KeyCode.G, "Requires the beacon in your inventory. Recall only while outside.");
-            BoardKey = Config.Bind("Controls", "EnterExit", KeyCode.F, "Enter nearby mech / exit safely (needs a validated spot).");
+            BoardKey = Config.Bind("Controls", "EnterExit", KeyCode.F, "Enter nearby mech / leave immediately, including in mid-air.");
             AssemblyKey = Config.Bind("Controls", "Assembly", KeyCode.P, "Open the loadout panel while the mech is deployed, grounded and unoccupied.");
             HornKey = Config.Bind("Controls", "Horn", KeyCode.H, "Honk the optional horn while piloting.");
             ItemRegistry.Register(BeaconId, new CustomItemInfo
@@ -59,7 +59,7 @@ namespace WayfarerMech
             gameObject.AddComponent<AssemblyPanel>();
             patches = new Harmony(Guid);
             patches.PatchAll(typeof(Plugin).Assembly);
-            LogInfo("Wayfarer 0.4.5 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
+            LogInfo("Wayfarer 0.4.6 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
         }
 
         public static bool Ready => PlayerCamera.main && PlayerCamera.main.body && WorldGeneration.world &&

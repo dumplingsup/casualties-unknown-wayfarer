@@ -1,5 +1,7 @@
 # Wayfarer 视觉重做交接
 
+**当前动画迭代 v0.4.6：** 重型慢速跨步、抬脚与承重回弹，手动 F 下机取消落脚点门槛。见 [动画与验证报告](ANIMATION-V0.4.6.md)。
+
 ## 接手进展：v0.4.5
 
 已在 `codex/wayfarer-compact-avian` 实现紧凑开放舱重做；当前报告以 [VISUAL-V0.4.5.md](VISUAL-V0.4.5.md) 为准。旧版为回退，不代表已认可。

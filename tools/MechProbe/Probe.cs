@@ -117,6 +117,53 @@ public class Probe : BaseUnityPlugin
         catch (Exception ex) { Logger.LogWarning("PROBE_SHOT_FAILED " + ex.Message); }
     }
 
+    private System.Collections.IEnumerator MotionAudit(MechController mech, Body body)
+    {
+        Directory.CreateDirectory(Path.Combine(output, "motion"));
+        for (int frame = 0; frame < 112 && mech; frame++)
+        {
+            int direction = frame < 12 ? 0 : frame < 44 ? 1 : frame < 84 ? -1 : frame < 100 ? 1 : 0;
+            ProbeInput.SetKey(KeyCode.D, direction > 0);
+            ProbeInput.SetKey(KeyCode.A, direction < 0);
+            ProbeInput.SetMousePos(new Vector3(direction < 0 ? 300 : 980, 360, 0));
+            yield return new WaitForEndOfFrame();
+            Capture("motion/frame-" + frame.ToString("D3") + ".png");
+            var feet = mech.Visual.VisualRoot.GetComponentsInChildren<Transform>();
+            var positions = new List<object>();
+            foreach (var foot in feet)
+                if (foot.name == "foot-front" || foot.name == "foot-back")
+                    positions.Add(new { foot.name, x = foot.position.x, y = foot.position.y });
+            File.AppendAllText(Path.Combine(output, "motion.jsonl"), JsonConvert.SerializeObject(new {
+                frame, time = Time.time, direction, x = mech.transform.position.x,
+                y = mech.transform.position.y, feet = positions }) + Environment.NewLine);
+            yield return new WaitForSeconds(0.0625f);
+        }
+        ProbeInput.ClearAll();
+        Logger.LogInfo("PROBE_MOTION_CAPTURED");
+        // Deliberate airborne F exit: no floor nearby, still enough body clearance.
+        Vector2 high = CarveHighShaft(mech);
+        if (high == Vector2.zero) { Logger.LogError("PROBE_AIR_EXIT_FIXTURE_FAILED"); yield break; }
+        mech.transform.position = high;
+        mech.Chassis.velocity = Vector2.zero;
+        float gravity = mech.Chassis.gravityScale;
+        mech.Chassis.gravityScale = 0;
+        yield return new WaitForSeconds(0.3f);
+        bool standing = MechSafeExit.FindNearby(high, new Vector2(1.6f, 5f), out _);
+        ProbeInput.SetKey(KeyCode.F, true);
+        yield return null;
+        ProbeInput.SetKey(KeyCode.F, false);
+        yield return new WaitForSeconds(0.15f);
+        Capture("air-exit.png");
+        Logger.LogInfo("PROBE_AIR_EXIT standing=" + standing + " exited=" + (mech.Pilot == null) +
+                       " playerSimulated=" + body.rb.simulated + " playerMovementLocked=" + body.forceNoMovement);
+        // Restore the fixture for lifecycle save/reload, independently of F success.
+        if (mech.Pilot == null) { TeleportPlayer(body, high); mech.Enter(body); }
+        mech.Chassis.gravityScale = gravity;
+        yield return new WaitForSeconds(3f);
+        SaveSystem.SaveGame();
+        Logger.LogInfo("PROBE_MOTION_DONE");
+    }
+
     private System.Collections.IEnumerator AuditSeatedHand(Body body, PilotVisualProxy proxy)
     {
         if (!body || body.limbs == null || body.limbs.Length < 6 || !proxy) yield break;
@@ -224,7 +271,23 @@ public class Probe : BaseUnityPlugin
             autoNext = Time.unscaledTime + 1f;
             autoStage = 5;
             Logger.LogInfo("PROBE_AUTO_BOARDED pilotProxy=" + (m != null && m.PilotProxy != null && m.PilotProxy.HasFace));
-            if (fakeInput && !perfMode)
+            if (Environment.GetEnvironmentVariable("CU_PROBE_EXIT_READY") == "1")
+            {
+                Vector2 high = CarveHighShaft(m);
+                if (high != Vector2.zero)
+                {
+                    m.transform.position = high;
+                    m.Chassis.velocity = Vector2.zero;
+                    m.Chassis.gravityScale = 0;
+                    Logger.LogInfo("PROBE_MANUAL_EXIT_READY high=" + high);
+                }
+            }
+            if (fakeInput && Environment.GetEnvironmentVariable("CU_PROBE_MOTION") == "1")
+            {
+                StartCoroutine(MotionAudit(m, b));
+                scriptStage = 999;
+            }
+            else if (fakeInput && !perfMode)
             {
                 scriptStage = Environment.GetEnvironmentVariable("CU_PROBE_ART") == "1" ? 90 : combatTest ? 30 : ceilingTest ? 60 : lifecycleTest ? 70 : layerTest ? 80 : 10;
                 scriptNext = Time.unscaledTime + 0.5f;

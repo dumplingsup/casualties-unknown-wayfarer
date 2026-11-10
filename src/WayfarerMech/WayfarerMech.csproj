@@ -3,7 +3,7 @@
     <TargetFramework>net48</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>WayfarerMech</AssemblyName>
-    <Version>0.4.5</Version>
+    <Version>0.4.6</Version>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <GameDir Condition="'$(GameDir)' == ''">D:\SteamLibrary\steamapps\common\Casualties Unknown</GameDir>
     <CoreLibPath Condition="'$(CoreLibPath)' == ''">D:\testGround\_casualties-analysis\moddeps\CUCoreLib.dll</CoreLibPath>

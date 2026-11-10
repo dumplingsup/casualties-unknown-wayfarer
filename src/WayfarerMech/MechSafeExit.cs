@@ -11,6 +11,17 @@ namespace WayfarerMech
     {
         private static readonly int GroundMask = LayerMask.GetMask("Ground");
 
+        public static Vector2 ManualExit(Vector2 center, Vector2 bodySize, int facing)
+        {
+            foreach (float offset in new[] { 3.4f, 2.4f, 1.2f })
+            foreach (int side in new[] { facing, -facing })
+            {
+                Vector2 candidate = center + Vector2.right * (offset * side);
+                if (!Physics2D.OverlapBox(candidate, bodySize * 0.88f, 0f, GroundMask)) return candidate;
+            }
+            return center;
+        }
+
         public static bool IsStandingSpot(Vector2 pos, Vector2 bodySize)
         {
             // Clearance for the body, with a small margin so we don't rely on exact contact.
@@ -22,7 +33,7 @@ namespace WayfarerMech
             return hit && hit.normal.y > 0.4f;
         }
 
-        /// <summary>Find a side spot next to the mech. Used for a deliberate F exit.</summary>
+        /// <summary>Find grounded placement for automatic save/lifecycle recovery.</summary>
         public static bool FindNearby(Vector2 center, Vector2 bodySize, out Vector2 result)
         {
             float[] horizontal = { 3.4f, 4.4f, 5.4f, 6.4f, 7.4f };
