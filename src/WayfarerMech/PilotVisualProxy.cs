@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using WayfarerMech.Core;
 
 namespace WayfarerMech
 {
@@ -18,6 +19,16 @@ namespace WayfarerMech
             public SpriteRenderer Proxy;
         }
 
+        private sealed class SeatedArm
+        {
+            public Limb[] Limbs = new Limb[3];
+            public SpriteRenderer[] Sources = new SpriteRenderer[3], Proxies = new SpriteRenderer[3];
+            public Vector2 Shoulder, Wrist;
+            public readonly List<Mirror> Clothes = new List<Mirror>();
+        }
+        private readonly List<SeatedArm> seatedArms = new List<SeatedArm>();
+        private Transform handsRoot;
+        public int HandCount { get; private set; }
         private Body body;
         private FacialExpression face;
         private SpriteRenderer sourceHead, sourceEyes, sourceNose, sourceTorso;
@@ -119,6 +130,82 @@ namespace WayfarerMech
                            " headMirrors=" + headMirrors.Count + " torsoMirrors=" + torsoMirrors.Count);
         }
 
+        public void AttachSeatedHands()
+        {
+            if (!built || handsRoot || body.limbs == null || body.limbs.Length < 9) return;
+            handsRoot = new GameObject("pilot-seated-arms").transform;
+            handsRoot.SetParent(transform, false);
+            // Verified native chain: 3/4/5 and 6/7/8 = upper/forearm/hand.
+            // Render-only copies; held items, colliders and Body scripts are excluded.
+            for (int side = 0; side < 2; side++)
+            {
+                var arm = new SeatedArm { Shoulder = side == 0 ? new Vector2(-3, 5) : new Vector2(0, 5),
+                    Wrist = side == 0 ? new Vector2(4, 7) : new Vector2(11, 7) };
+                for (int j = 0; j < 3; j++)
+                {
+                    var limb = body.limbs[3 + side * 3 + j];
+                    arm.Limbs[j] = limb;
+                    var source = limb ? limb.GetComponent<SpriteRenderer>() : null;
+                    arm.Sources[j] = source;
+                    if (!source) continue;
+                    arm.Proxies[j] = CreateSprite("seated-arm-" + side + "-" + j, handsRoot,
+                        source, side == 0 ? baseSort - 1 : baseSort + 5);
+                    MirrorChildren(source.transform, arm.Proxies[j].transform, arm.Clothes,
+                        side == 0 ? baseSort - 1 : baseSort + 5, null, null);
+                }
+                seatedArms.Add(arm);
+            }
+            UpdateSeatedHands();
+            Plugin.LogInfo("PILOT_HANDS_BUILT chains=" + seatedArms.Count);
+        }
+
+        private static Vector2 SeatPoint(Vector2 pixels) => new Vector2(pixels.x, -pixels.y) / (MechArt.Ppu * 0.9f);
+
+        private static void FitSegment(SpriteRenderer sr, Vector2 from, Vector2 to)
+        {
+            if (!sr || !sr.sprite) return;
+            var bounds = sr.sprite.bounds;
+            bool horizontal = bounds.size.x > bounds.size.y * 1.25f;
+            float extent = horizontal ? bounds.size.x : bounds.size.y;
+            float scale = Vector2.Distance(from, to) / Mathf.Max(0.01f, extent);
+            var rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(
+                horizontal ? Vector2.right : Vector2.down, to - from));
+            sr.transform.localRotation = rotation;
+            sr.transform.localScale = Vector3.one * scale;
+            sr.transform.localPosition = (Vector3)((from + to) * 0.5f) - rotation * (bounds.center * scale);
+        }
+
+        private void UpdateSeatedHands()
+        {
+            HandCount = 0;
+            foreach (var arm in seatedArms)
+            {
+                var delta = arm.Wrist - arm.Shoulder;
+                var pose = TwoBonePose.Solve(delta.x, delta.y, 6.5, 7, -1);
+                Vector2 shoulder = SeatPoint(arm.Shoulder);
+                Vector2 elbow = SeatPoint(arm.Shoulder + new Vector2((float)pose.KneeX, (float)pose.KneeY));
+                Vector2 wrist = SeatPoint(arm.Wrist);
+                bool intact = lastVisible;
+                for (int j = 0; j < 3; j++)
+                {
+                    intact = intact && arm.Limbs[j] && !arm.Limbs[j].dismembered;
+                    var target = arm.Proxies[j];
+                    Sync(arm.Sources[j], target, target ? target.sortingOrder : 0);
+                    if (!target) continue;
+                    target.gameObject.SetActive(intact && target.sprite);
+                    if (j == 0) FitSegment(target, shoulder, elbow);
+                    if (j == 1) FitSegment(target, elbow, wrist);
+                    if (j == 2)
+                    {
+                        FitSegment(target, wrist - Vector2.right * 0.12f, wrist + Vector2.right * 0.12f);
+                        if (intact && target.sprite) HandCount++;
+                    }
+                }
+                foreach (var cloth in arm.Clothes)
+                    Sync(cloth.Source, cloth.Proxy, cloth.Proxy ? cloth.Proxy.sortingOrder : 0);
+            }
+        }
+
         private Vector3 ComputeTorsoOffset()
         {
             if (sourceHead == null || sourceHead.sprite == null || sourceTorso == null || sourceTorso.sprite == null)
@@ -205,6 +292,7 @@ namespace WayfarerMech
                 lastVisible = visible;
                 foreach (var r in GetComponentsInChildren<SpriteRenderer>(true)) r.enabled = visible;
             }
+            UpdateSeatedHands();
         }
 
         private static void Sync(SpriteRenderer source, SpriteRenderer proxy, int order)
@@ -221,6 +309,9 @@ namespace WayfarerMech
         public void Teardown()
         {
             built = false;
+            seatedArms.Clear();
+            if (handsRoot) Destroy(handsRoot.gameObject);
+            handsRoot = null;
             foreach (var m in headMirrors) if (m.Proxy) Destroy(m.Proxy.gameObject);
             foreach (var m in torsoMirrors) if (m.Proxy) Destroy(m.Proxy.gameObject);
             headMirrors.Clear();

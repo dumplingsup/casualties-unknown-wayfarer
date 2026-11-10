@@ -37,6 +37,9 @@ dotnet build src/WayfarerMech/WayfarerMech.csproj -c Release -p:RestoreLockedMod
 
 ## 日常协作
 
+视觉姿态纯测试：`dotnet run --project tests/PoseTests/PoseTests.csproj -c Release`。
+CI 同样执行此项；不能代替脚底接地和驾驶员外观的实机验证。
+
 `main` 保存可追溯基线，功能用 `feat/<name>`，修复用 `fix/<name>`。
 提交说明写清行为变化和验证；合并前运行 Source checks。
 CI 仅验证 Python/纯 C#，不会获得游戏文件、用户存档或本机凭据。

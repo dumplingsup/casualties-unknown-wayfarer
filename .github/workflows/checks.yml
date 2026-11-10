@@ -20,6 +20,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - run: dotnet run --project tests/DrillShapeTests/DrillShapeTests.csproj -c Release
+      - run: dotnet run --project tests/PoseTests/PoseTests.csproj -c Release
       - run: dotnet run --project tests/SaveRecordTests/SaveRecordTests.csproj -c Release -p:RestoreLockedMode=true
 # Full Mod builds require privately installed game assemblies and CUCoreLib.
 # These checks do not claim game loading, gameplay, save reload or multiplayer PASS.

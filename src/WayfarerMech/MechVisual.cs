@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using WayfarerMech.Core;
 
 namespace WayfarerMech
 {
@@ -20,6 +21,8 @@ namespace WayfarerMech
             public Transform Thigh, Shin, Foot;
             public MechPartDef Part;
             public bool Front;
+            public float SolePixels, GroundBlend, GroundError;
+            public bool ContactSolved;
         }
 
         private sealed class ArmRig
@@ -60,6 +63,10 @@ namespace WayfarerMech
         private bool thrusting, grounded = true;
         private float velocityX, velocityY;
         private bool built;
+        private float hullBottomPixels;
+        private static readonly int FootGroundMask = LayerMask.GetMask("Ground");
+        public int GroundedFeet => (backLeg != null && backLeg.ContactSolved ? 1 : 0) + (frontLeg != null && frontLeg.ContactSolved ? 1 : 0);
+        public float MaxFootGroundError => Mathf.Max(backLeg?.GroundError ?? 0, frontLeg?.GroundError ?? 0);
 
         public void Build(Transform root, MechLoadout loadout)
         {
@@ -68,6 +75,7 @@ namespace WayfarerMech
             Loadout = loadout ?? MechLoadout.Default();
             var stats = MechCatalog.Combine(Loadout);
             var body = stats.Body;
+            hullBottomPixels = stats.HullH * Ppu * 0.5f;
             var legs = stats.Legs;
             var boost = stats.Booster;
             string palette = Loadout.PaletteId;
@@ -205,6 +213,7 @@ namespace WayfarerMech
             ankle.SetParent(leg.Shin, false);
             ankle.localPosition = Px(0f, part.ShinLen);
             var footInfo = MechArt.Get(part.ArtPrefix + "_foot_" + Loadout.PaletteId);
+            leg.SolePixels = footInfo != null ? footInfo.Height - 1 - footInfo.PivotY : 6f;
             leg.Foot = new GameObject(front ? "foot-front" : "foot-back").transform;
             leg.Foot.SetParent(ankle, false);
             leg.Foot.localPosition = Vector3.zero;
@@ -382,6 +391,8 @@ namespace WayfarerMech
             DetachPilot();
             if (!PilotAnchor || !pilot) return;
             PilotProxy = PilotVisualProxy.Create(pilot, PilotAnchor, Vector3.zero, 24);
+            if (Loadout.BodyId == "champion_open" || Loadout.BodyId == "sb_avian" || Loadout.BodyId == "sb_avianproto")
+                PilotProxy.AttachSeatedHands();
         }
 
         public void DetachPilot()
@@ -426,7 +437,7 @@ namespace WayfarerMech
             bool moving = grounded && Mathf.Abs(velocityX) > 0.2f;
             float targetWalk = moving ? Mathf.Clamp01(Mathf.Abs(velocityX) / 6f) : 0f;
             walkBlend = Mathf.MoveTowards(walkBlend, targetWalk, dt * 7f);
-            if (moving) walkPhase = Mathf.Repeat(walkPhase + dt * (0.9f + Mathf.Abs(velocityX) * 0.16f), 1f);
+            if (moving) walkPhase = Mathf.Repeat(walkPhase + dt * Mathf.Clamp(Mathf.Abs(velocityX) * Ppu / 26f, 0.6f, 5.5f), 1f);
             jetBlend = Mathf.MoveTowards(jetBlend, thrusting ? 1f : 0f, dt * 7f);
             airBlend = Mathf.MoveTowards(airBlend, grounded ? 0f : 1f, dt * 5f);
             if (landingTimer > 0f) landingTimer = Mathf.Max(0f, landingTimer - dt);
@@ -477,10 +488,45 @@ namespace WayfarerMech
             float landingBend = landingTimer > 0f ? Mathf.Sin(landingTimer / LandingDuration * Mathf.PI) * 12f * (0.3f + landingImpact) : 0f;
             shin += landingBend;
             thigh -= landingBend * 0.35f;
+            float footAngle = 0f;
+            leg.ContactSolved = false;
+            leg.GroundError = 0;
+            // Stance sweeps under the hip while the swing foot lifts. Ground rays are
+            // cosmetic only: no colliders, player state or movement speed are changed.
+            float stride = 6.5f * walkBlend;
+            float sweep = p < 0.5f ? Mathf.Lerp(stride, -stride, p * 2f)
+                : Mathf.Lerp(-stride, stride, (p - 0.5f) * 2f);
+            float lift = p < 0.5f ? 0f : Mathf.Sin((p - 0.5f) * 2f * Mathf.PI) * 4f * walkBlend;
+            sweep *= velocityX * Facing >= 0 ? 1 : -1;
+            var hip = leg.Thigh.parent;
+            var hipInRig = VisualRoot.InverseTransformPoint(hip.position);
+            Vector2 rayOrigin = VisualRoot.TransformPoint(new Vector3(hipInRig.x + sweep / Ppu,
+                -hullBottomPixels / Ppu + 1.1f, 0f));
+            var hit = grounded ? Physics2D.Raycast(rayOrigin, Vector2.down, 2.2f, FootGroundMask) : default(RaycastHit2D);
+            bool contact = hit && hit.normal.y > 0.4f;
+            leg.GroundBlend = Mathf.MoveTowards(leg.GroundBlend, contact ? 1f : 0f, Time.deltaTime * 12f);
+            if (contact)
+            {
+                Vector2 targetWorld = hit.point + hit.normal * (leg.SolePixels / Ppu) + Vector2.up * (lift / Ppu);
+                Vector3 local = hip.InverseTransformPoint(targetWorld);
+                var pose = TwoBonePose.Solve(local.x * Ppu, -local.y * Ppu,
+                    leg.Part.ThighLen, leg.Part.ShinLen);
+                thigh = Mathf.LerpAngle(thigh, (float)pose.Upper, leg.GroundBlend);
+                shin = Mathf.LerpAngle(shin, (float)pose.Lower, leg.GroundBlend);
+                var normal = hip.InverseTransformVector(hit.normal);
+                footAngle = Mathf.Atan2(-normal.x, normal.y) * Mathf.Rad2Deg;
+                footAngle = Mathf.Clamp(footAngle, -25f, 25f) * leg.GroundBlend;
+                leg.ContactSolved = pose.Reachable && lift < 0.2f && leg.GroundBlend > 0.99f;
+            }
             leg.Thigh.localRotation = Quaternion.Euler(0, 0, thigh);
             leg.Shin.localRotation = Quaternion.Euler(0, 0, shin);
-            float toe = Mathf.Sin(p * Mathf.PI * 2f) * 3f * walkBlend;
-            leg.Foot.localRotation = Quaternion.Euler(0, 0, -(thigh + shin) + toe);
+            float toe = Mathf.Sin(p * Mathf.PI * 2f) * 3f * walkBlend * (1f - leg.GroundBlend);
+            leg.Foot.localRotation = Quaternion.Euler(0, 0, -(thigh + shin) + toe + footAngle);
+            if (leg.ContactSolved)
+            {
+                Vector2 sole = leg.Foot.TransformPoint(Px(0f, leg.SolePixels));
+                leg.GroundError = Mathf.Abs(Vector2.Dot(sole - hit.point, hit.normal));
+            }
         }
 
         private void AnimateArms(float dt)

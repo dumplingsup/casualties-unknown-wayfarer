@@ -93,3 +93,7 @@ dotnet build src/WayfarerMech/WayfarerMech.csproj -c Release
   分页装配，97 部件构建审计。
 - v0.3：开放舱 + 2 机体/3 臂/2 腿/2 推进器/4 配色原型（`docs/WAYFARER-V0.3-…` 历史）。
 - v0.2：早期侦察机甲、Pixel Art Atlas 参考；旧尺寸/偏移勿用于 v0.4。
+# v0.4.4 补充
+
+腿甲在既有原创生成器中扩宽并调整 bone 配色；没有加入新的外部素材。驾驶员手臂、手与服装从运行中的游戏角色读取，只创建运行时显示副本，不将游戏精灵提取进分发包。详见 `VISUAL-V0.4.4.md`。
+

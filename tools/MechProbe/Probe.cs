@@ -117,6 +117,28 @@ public class Probe : BaseUnityPlugin
         catch (Exception ex) { Logger.LogWarning("PROBE_SHOT_FAILED " + ex.Message); }
     }
 
+    private System.Collections.IEnumerator AuditSeatedHand(Body body, PilotVisualProxy proxy)
+    {
+        if (!body || body.limbs == null || body.limbs.Length < 6 || !proxy) yield break;
+        var hand = body.limbs[5];
+        bool previous = hand.dismembered;
+        int count = proxy.HandCount;
+        try
+        {
+            hand.dismembered = true;
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            int expected = previous ? count : count - 1;
+            if (proxy.HandCount != expected) Logger.LogError("PROBE_HAND_HIDE_FAIL before=" + count + " after=" + proxy.HandCount);
+            else Logger.LogInfo("PROBE_HAND_HIDE_PASS before=" + count + " after=" + proxy.HandCount);
+        }
+        finally { if (hand) hand.dismembered = previous; }
+        yield return null;
+        yield return new WaitForEndOfFrame();
+        if (proxy && proxy.HandCount == count) Logger.LogInfo("PROBE_HAND_RESTORE_PASS hands=" + count);
+        else Logger.LogError("PROBE_HAND_RESTORE_FAIL");
+    }
+
     private void AuditSaveRecord(Body body)
     {
         var provider = new MechLoadoutSaveProvider();
@@ -238,10 +260,12 @@ public class Probe : BaseUnityPlugin
         switch (scriptStage)
         {
             case 90:
+                Logger.LogInfo("PROBE_VISUAL_IDLE hands=" + (m.PilotProxy ? m.PilotProxy.HandCount : 0) + " feet=" + m.Visual.GroundedFeet + " footError=" + m.Visual.MaxFootGroundError);
                 Capture("art-01-idle-right.png");
                 scriptStage = 190; scriptNext = Time.unscaledTime + 0.15f;
                 break;
             case 190:
+                if (Environment.GetEnvironmentVariable("CU_PROBE_HANDAUDIT") == "1") StartCoroutine(AuditSeatedHand(b, m.PilotProxy));
                 ProbeInput.SetKey(KeyCode.D, true);
                 ProbeInput.SetMousePos(new Vector3(950, 360, 0));
                 scriptStage = 91; scriptNext = Time.unscaledTime + 0.65f;
@@ -349,6 +373,7 @@ public class Probe : BaseUnityPlugin
                 Logger.LogInfo("PROBE_SCRIPT_ASSEMBLY_START pilot=" + (m.Pilot != null));
                 break;
             case 16:
+                Capture("shot-script-assembly-settled.png");
                 scriptStage = 17;
                 scriptNext = Time.unscaledTime + 0.5f;
                 Logger.LogInfo("PROBE_SCRIPT_ASSEMBLY_WAIT");
@@ -1413,6 +1438,9 @@ public class Probe : BaseUnityPlugin
                     hull = new { x = Round(m.HullSize.x), y = Round(m.HullSize.y) },
                     ceilingReason = m.CeilingReason,
                     lastHitKind = m.LastHitKind, lastHitTarget = m.LastHitTarget, lastHitDamage = Round(m.LastHitDamage),
+                    groundedFeet = m.Visual != null ? m.Visual.GroundedFeet : 0,
+                    footGroundError = m.Visual != null ? m.Visual.MaxFootGroundError : 0f,
+                    seatedHands = m.PilotProxy != null ? m.PilotProxy.HandCount : 0,
                     pilotProxy = m.PilotProxy != null && m.PilotProxy.HasFace,
                     proxyHead = m.PilotProxy != null ? m.PilotProxy.HeadSprite : "none",
                     proxyEyes = m.PilotProxy != null ? m.PilotProxy.EyesSprite : "none",

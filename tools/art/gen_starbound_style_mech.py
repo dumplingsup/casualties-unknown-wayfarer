@@ -389,20 +389,21 @@ def body_icons(palette: str, pal: dict, body_back, body_front):
 def leg_layers(palette: str, pal: dict, kind: str):
     # Actual joint axes are 9 native pixels apart, matching the runtime legs.
     steel = [(16,23,27),(32,42,46),(54,67,70),(87,102,104),(137,152,149)]
+    armor = [(35,29,22),(64,49,29),(102,78,41),(147,115,63),(187,157,100),(218,195,139)] if pal is PALETTES["bone"] else pal["primary"]
     thigh, shin, foot = arr(18,17), arr(16,17), arr(24,10)
     def plate(target, points, ramp):
         mask = poly_mask(target.shape[1],target.shape[0],points)
         paint(target,mask,ramp,noise=0)
     # Hip socket, thigh box section, visible knee bearing.
     plate(thigh, [(3,3),(6,0),(12,0),(16,4),(15,11),(12,15),(5,14),(2,9)], steel)
-    plate(thigh, [(5,4),(12,3),(14,6),(12,11),(5,10)], pal["primary"])
-    line(thigh,[(5,5),(11,5)],pal["primary"][4])
+    plate(thigh, [(4,4),(12,3),(14,6),(13,11),(4,10)], armor)
+    line(thigh,[(5,5),(11,5)],armor[4])
     for cy in (3,12):
         paint(thigh,ellipse_mask(18,17,9,cy,3,3),steel,noise=0)
         thigh[ellipse_mask(18,17,9,cy,1,1)] = rgba(steel[1])
     # Two-tone greave and one exposed hydraulic rod, rather than a chain of circles.
     plate(shin,[(3,2),(10,0),(14,4),(13,11),(10,15),(4,15),(2,10)],steel)
-    plate(shin,[(7,4),(12,4),(12,11),(9,13),(6,10)],pal["primary"])
+    plate(shin,[(6,4),(13,4),(13,11),(9,13),(5,10)],armor)
     line(shin,[(4,5),(4,11)],steel[4],width=2)
     line(shin,[(8,5),(11,5)],pal["accent"][3])
     paint(shin,ellipse_mask(16,17,8,3,3,3),steel,noise=0)
@@ -411,7 +412,7 @@ def leg_layers(palette: str, pal: dict, kind: str):
         for y in (6,8,10): line(shin,[(5,y),(10,y)],pal["accent"][3])
     # Raised ankle and short chamfered toe; the sole is visibly load-bearing.
     plate(foot,[(4,3),(8,1),(13,1),(16,4),(21,5),(23,7),(21,9),(2,9),(1,6)],steel)
-    plate(foot,[(5,4),(13,3),(17,5),(19,6),(4,6)],pal["primary"])
+    plate(foot,[(5,4),(13,3),(17,5),(19,6),(4,6)],armor)
     line(foot,[(3,8),(21,8)],steel[0],width=2)
     for x in (5,10,15,20): dot(foot,x,8,steel[2])
     return {"thigh":(thigh,(9,3)),"shin":(shin,(8,3)),"foot":(foot,(10,3)),
