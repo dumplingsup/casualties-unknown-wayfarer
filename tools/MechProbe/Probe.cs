@@ -381,7 +381,15 @@ public class Probe : BaseUnityPlugin
             case 17:
                 if (Environment.GetEnvironmentVariable("CU_PROBE_SAVEAUDIT") == "1") AuditSaveRecord(b);
                 if (catalogTest) AuditCatalog();
-                if (AssemblyPanel.IsOpen) ApplyTestLoadout();
+                if (AssemblyPanel.IsOpen && Environment.GetEnvironmentVariable("CU_PROBE_KEEP_ART_LOADOUT") == "1")
+                {
+                    // Apply the current draft via the real panel path so visual candidates
+                    // survive restart instead of always being replaced with the test kit.
+                    var panel = Plugin.Instance.GetComponent<AssemblyPanel>();
+                    typeof(AssemblyPanel).GetMethod("Apply", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(panel, null);
+                    Logger.LogInfo("PROBE_ART_LOADOUT_KEPT " + Plugin.Mech.Loadout.Summary);
+                }
+                else if (AssemblyPanel.IsOpen) ApplyTestLoadout();
                 else Logger.LogInfo("PROBE_SCRIPT_ASSEMBLY_NOT_OPEN");
                 scriptStage = 18;
                 scriptNext = Time.unscaledTime + 1.0f;

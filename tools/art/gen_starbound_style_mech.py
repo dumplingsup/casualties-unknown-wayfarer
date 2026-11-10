@@ -213,70 +213,53 @@ def ramp_palette(rgb):
 
 
 def champion_cockpit(pal):
-    """Bird canopy is a structural roll cage over a seated pilot, not a nose sticker.
-    Pixel contract: pivot 32,34; head 30,24; shoulders 46,48; hips 24/40,60.
+    """Compact open tub. Pixel anchors: head 30,24; hips 24/40,60;
+    near trunnion 46,48; far trunnion 50,40. No overhead cantilever.
     """
-    W,H = 76,64
+    W,H = 64,64
     back,front = arr(W,H),arr(W,H)
-    steel = [(15,22,26),(31,42,46),(55,67,70),(90,103,104),(141,153,145)]
-    ivory = [(44,43,39),(77,73,60),(121,114,92),(170,160,126),(217,203,165),(239,225,192)]
-    ochre = [(45,31,20),(83,54,26),(132,87,34),(181,127,49),(217,171,76),(242,207,123)]
+    steel = [(18,24,28),(36,45,48),(62,73,75),(103,114,111),(156,164,149)]
+    ivory = [(49,47,39),(88,82,64),(133,122,90),(181,166,122),(218,204,160)]
+    ochre = [(42,31,24),(77,53,33),(121,82,44),(164,117,60),(204,159,91)]
     armor = ochre if pal is PALETTES["bone"] else pal["primary"]
     def plate(dst, pts, ramp):
-        m=poly_mask(W,H,pts); paint(dst,m,ramp,noise=0,bottom_darken=0.08); return m
-    # Rear load-bearing mast, engine block and seat. The mast carries the canopy.
-    plate(back,[(6,23),(16,19),(23,23),(24,47),(17,53),(5,47)],steel)
-    plate(back,[(5,30),(14,28),(16,44),(7,46),(3,40)],armor)
-    for y in (32,36,40): line(back,[(7,y),(12,y)],steel[0])
-    plate(back,[(15,16),(20,12),(25,18),(24,36),(19,42),(14,37)],steel)
-    plate(back,[(20,22),(25,22),(25,35),(31,39),(28,43),(20,39)],pal["secondary"])
-    line(back,[(21,24),(21,35),(29,40)],pal["secondary"][4],width=2)
-    # Broad wing plates sweep backwards from the roof mount.
-    for pts in (
-        [(29,9),(16,4),(2,3),(10,11),(23,15)],
-        [(25,13),(13,10),(0,12),(9,19),(22,21)],
-        [(22,19),(11,18),(2,23),(11,27),(22,25)]):
-        plate(back,pts,ivory)
-    line(back,[(8,7),(22,12)],ochre[3],width=2)
-    line(back,[(6,16),(19,20)],ivory[1])
-    plate(back,[(14,26),(16,14),(24,7),(31,7),(28,13),(22,17),(20,29)],armor)
-    line(back,[(17,24),(19,16),(26,10)],steel[4])
-    # The bird skull is the roof. Its lower edge stays ABOVE the real face window.
-    plate(front,[(22,9),(30,3),(44,2),(55,6),(63,12),(59,17),(49,14),(34,13),(26,16),(20,15)],ivory)
-    plate(front,[(29,5),(32,1),(41,2),(47,5),(39,7)],ivory)
-    # A hooked beak hangs ahead of the console, never over the pilot.
-    plate(front,[(57,10),(66,12),(72,18),(74,25),(70,29),(68,21),(61,18),(57,16)],ochre)
-    line(front,[(62,14),(68,17),(71,23)],ochre[4])
-    plate(front,[(43,8),(53,8),(56,11),(51,14),(45,12)],steel)
-    front[ellipse_mask(W,H,50,10,2,2)] = rgba(ochre[4])
-    dot(front,50,10,OUTLINE)
-    line(front,[(41,6),(52,7)],ivory[4])
-    # Console behind hands, with an angled lit instrument display.
-    plate(back,[(43,28),(51,28),(54,36),(50,41),(41,38)],steel)
-    plate(back,[(44,29),(49,29),(50,33),(44,33)],pal["accent"])
-    line(back,[(45,31),(48,31)],pal["glow"])
-    # Tub chassis below the seat; the pilot's torso remains visible above the rim.
-    plate(front,[(15,41),(22,39),(37,40),(48,36),(54,39),(54,50),(45,56),(25,55),(16,50)],armor)
-    line(front,[(19,42),(35,43),(47,39),(51,40)],ochre[4],width=2)
-    plate(front,[(25,46),(39,46),(41,52),(29,53)],armor)
-    for x in (29,33,37): line(front,[(x,47),(x,51)],steel[0])
-    # Guard rail and two mechanical control sticks: clearly belong to the cockpit.
-    line(front,[(21,36),(40,36),(43,33)],steel[0],width=3)
-    line(front,[(22,35),(39,35),(42,32)],steel[4])
-    line(front,[(23,36),(23,42)],steel[2],width=2)
-    line(front,[(38,35),(38,41)],steel[2],width=2)
+        paint(dst,poly_mask(W,H,pts),ramp,noise=0,bottom_darken=0.04)
+    # Continuous rear spine runs from seat back into the hip box.
+    plate(back,[(14,17),(20,15),(24,21),(24,44),(30,52),(25,59),(16,53),(12,35)],steel)
+    line(back,[(17,22),(17,42),(24,52)],steel[3],width=2)
+    # Two short avian feather plates stay behind the occupant, not above the face.
+    plate(back,[(16,23),(8,16),(5,9),(12,11),(22,20),(21,29)],ivory)
+    plate(back,[(14,29),(5,25),(2,19),(9,20),(19,26),(20,34)],armor)
+    # Seat cushion and tall padded back. Empty head window remains truly open.
+    plate(back,[(20,25),(24,24),(25,36),(34,39),(34,43),(22,42),(19,37)],steel)
+    line(back,[(22,27),(23,36),(30,40)],armor[2],width=2)
+    # Low instrument stand is mechanically tied to the tub, not a floating cannon.
+    plate(back,[(41,32),(47,31),(51,36),(49,45),(42,44)],steel)
+    line(back,[(43,33),(47,33)],pal["glow"])
     for x in (33,40):
-        line(back,[(x,35),(x+1,31)],steel[3],width=2)
+        line(back,[(x,39),(x+1,31)],steel[3],width=2)
         line(back,[(x,30),(x+3,30)],steel[0],width=2)
-    # Explicit hip beam, readable bearings and mounted tool axis.
-    plate(back,[(19,51),(43,51),(47,57),(43,63),(20,63),(15,57)],steel)
+    # Far side outrigger: thick diagonal gusset continues into the belly beam.
+    plate(back,[(38,49),(42,39),(49,34),(55,37),(55,44),(47,51)],steel)
+    paint(back,ellipse_mask(W,H,50,40,5,5),steel,noise=0)
+    # Broad single tub surface; its lower edge lands directly on the hip beam.
+    plate(front,[(16,39),(23,38),(34,40),(43,36),(50,38),(53,46),(46,55),(25,55),(16,49)],armor)
+    line(front,[(18,40),(25,40),(34,42),(42,39)],armor[-1])
+    # Short beak integrated into the low chest, with no decorative eye/head roof.
+    plate(front,[(39,35),(47,34),(56,39),(58,44),(53,43),(48,40),(41,41)],ivory)
+    line(front,[(43,36),(48,36),(54,40)],ivory[-1])
+    # One dark access panel and a broad unbroken lower plate instead of many vents.
+    plate(front,[(22,45),(33,45),(35,50),(24,50)],steel)
+    line(front,[(25,47),(31,47)],steel[2])
+    plate(back,[(18,52),(44,52),(47,57),(44,63),(20,63),(16,58)],steel)
+    line(back,[(22,56),(40,56)],steel[3],width=2)
     for x in (24,40):
-        paint(back,ellipse_mask(W,H,x,59,5,4),steel,noise=0)
-        back[ellipse_mask(W,H,x,59,2,2)] = rgba(ochre[2])
-    paint(front,ellipse_mask(W,H,46,48,7,7),steel,noise=0)
-    paint(front,ellipse_mask(W,H,46,48,4,4),ivory,noise=0)
+        paint(back,ellipse_mask(W,H,x,60,4,3),steel,noise=0)
+    # Near tool load path: trunnion -> triangular lower gusset -> pelvic crossmember.
+    plate(front,[(37,46),(49,44),(51,51),(42,57),(36,54)],steel)
+    paint(front,ellipse_mask(W,H,46,48,6,6),steel,noise=0)
+    paint(front,ellipse_mask(W,H,46,48,3,3),armor,noise=0)
     front[ellipse_mask(W,H,46,48,1,1)] = OUTLINE
-    rivets(front,[(19,46),(25,43),(43,42),(46,54)],ivory[4])
     return back,front,(32,34)
 
 
@@ -398,20 +381,20 @@ def leg_layers(palette: str, pal: dict, kind: str):
     plate(thigh, [(3,3),(6,0),(12,0),(16,4),(15,11),(12,15),(5,14),(2,9)], steel)
     plate(thigh, [(4,4),(12,3),(14,6),(13,11),(4,10)], armor)
     line(thigh,[(5,5),(11,5)],armor[4])
-    for cy in (3,12):
+    for cy in (3,):
         paint(thigh,ellipse_mask(18,17,9,cy,3,3),steel,noise=0)
         thigh[ellipse_mask(18,17,9,cy,1,1)] = rgba(steel[1])
     # Two-tone greave and one exposed hydraulic rod, rather than a chain of circles.
     plate(shin,[(3,2),(10,0),(14,4),(13,11),(10,15),(4,15),(2,10)],steel)
-    plate(shin,[(6,4),(13,4),(13,11),(9,13),(5,10)],armor)
+    plate(shin,[(5,4),(13,3),(14,10),(11,14),(4,13)],armor)
     line(shin,[(4,5),(4,11)],steel[4],width=2)
-    line(shin,[(8,5),(11,5)],pal["accent"][3])
+    line(shin,[(7,5),(12,5)],armor[4])
     paint(shin,ellipse_mask(16,17,8,3,3,3),steel,noise=0)
     shin[ellipse_mask(16,17,8,3,1,1)] = OUTLINE
     if kind == "hopper":
         for y in (6,8,10): line(shin,[(5,y),(10,y)],pal["accent"][3])
     # Raised ankle and short chamfered toe; the sole is visibly load-bearing.
-    plate(foot,[(4,3),(8,1),(13,1),(16,4),(21,5),(23,7),(21,9),(2,9),(1,6)],steel)
+    plate(foot,[(3,3),(7,1),(14,1),(17,4),(22,5),(23,7),(23,9),(1,9),(0,6)],steel)
     plate(foot,[(5,4),(13,3),(17,5),(19,6),(4,6)],armor)
     line(foot,[(3,8),(21,8)],steel[0],width=2)
     for x in (5,10,15,20): dot(foot,x,8,steel[2])

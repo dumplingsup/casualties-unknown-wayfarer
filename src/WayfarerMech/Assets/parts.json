@@ -303,7 +303,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_back_olive": {
     "h": 64,
@@ -312,7 +312,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_back_steel": {
     "h": 64,
@@ -321,7 +321,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_back_violet": {
     "h": 64,
@@ -330,7 +330,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_front_bone": {
     "h": 64,
@@ -339,7 +339,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_front_olive": {
     "h": 64,
@@ -348,7 +348,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_front_steel": {
     "h": 64,
@@ -357,7 +357,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_champion_open_front_violet": {
     "h": 64,
@@ -366,7 +366,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_apex_back_bone": {
     "h": 60,
@@ -519,7 +519,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_back_olive": {
     "h": 64,
@@ -528,7 +528,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_back_steel": {
     "h": 64,
@@ -537,7 +537,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_back_violet": {
     "h": 64,
@@ -546,7 +546,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_front_bone": {
     "h": 64,
@@ -555,7 +555,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_front_olive": {
     "h": 64,
@@ -564,7 +564,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_front_steel": {
     "h": 64,
@@ -573,7 +573,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avian_front_violet": {
     "h": 64,
@@ -582,7 +582,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_back_bone": {
     "h": 64,
@@ -591,7 +591,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_back_olive": {
     "h": 64,
@@ -600,7 +600,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_back_steel": {
     "h": 64,
@@ -609,7 +609,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_back_violet": {
     "h": 64,
@@ -618,7 +618,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_front_bone": {
     "h": 64,
@@ -627,7 +627,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_front_olive": {
     "h": 64,
@@ -636,7 +636,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_front_steel": {
     "h": 64,
@@ -645,7 +645,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_avianproto_front_violet": {
     "h": 64,
@@ -654,7 +654,7 @@
       34
     ],
     "ppu": 11.0,
-    "w": 76
+    "w": 64
   },
   "body_sb_bad_back_bone": {
     "h": 60,
