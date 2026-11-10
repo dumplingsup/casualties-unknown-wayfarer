@@ -212,6 +212,74 @@ def ramp_palette(rgb):
     return [tuple(min(255, max(0, int(c * f))) for c in (r, g, b)) for f in factors]
 
 
+def champion_cockpit(pal):
+    """Bird canopy is a structural roll cage over a seated pilot, not a nose sticker.
+    Pixel contract: pivot 32,34; head 30,24; shoulders 46,48; hips 24/40,60.
+    """
+    W,H = 76,64
+    back,front = arr(W,H),arr(W,H)
+    steel = [(15,22,26),(31,42,46),(55,67,70),(90,103,104),(141,153,145)]
+    ivory = [(44,43,39),(77,73,60),(121,114,92),(170,160,126),(217,203,165),(239,225,192)]
+    ochre = [(45,31,20),(83,54,26),(132,87,34),(181,127,49),(217,171,76),(242,207,123)]
+    armor = ochre if pal is PALETTES["bone"] else pal["primary"]
+    def plate(dst, pts, ramp):
+        m=poly_mask(W,H,pts); paint(dst,m,ramp,noise=0,bottom_darken=0.08); return m
+    # Rear load-bearing mast, engine block and seat. The mast carries the canopy.
+    plate(back,[(6,23),(16,19),(23,23),(24,47),(17,53),(5,47)],steel)
+    plate(back,[(5,30),(14,28),(16,44),(7,46),(3,40)],armor)
+    for y in (32,36,40): line(back,[(7,y),(12,y)],steel[0])
+    plate(back,[(15,16),(20,12),(25,18),(24,36),(19,42),(14,37)],steel)
+    plate(back,[(20,22),(25,22),(25,35),(31,39),(28,43),(20,39)],pal["secondary"])
+    line(back,[(21,24),(21,35),(29,40)],pal["secondary"][4],width=2)
+    # Broad wing plates sweep backwards from the roof mount.
+    for pts in (
+        [(29,9),(16,4),(2,3),(10,11),(23,15)],
+        [(25,13),(13,10),(0,12),(9,19),(22,21)],
+        [(22,19),(11,18),(2,23),(11,27),(22,25)]):
+        plate(back,pts,ivory)
+    line(back,[(8,7),(22,12)],ochre[3],width=2)
+    line(back,[(6,16),(19,20)],ivory[1])
+    plate(back,[(14,26),(16,14),(24,7),(31,7),(28,13),(22,17),(20,29)],armor)
+    line(back,[(17,24),(19,16),(26,10)],steel[4])
+    # The bird skull is the roof. Its lower edge stays ABOVE the real face window.
+    plate(front,[(22,9),(30,3),(44,2),(55,6),(63,12),(59,17),(49,14),(34,13),(26,16),(20,15)],ivory)
+    plate(front,[(29,5),(32,1),(41,2),(47,5),(39,7)],ivory)
+    # A hooked beak hangs ahead of the console, never over the pilot.
+    plate(front,[(57,10),(66,12),(72,18),(74,25),(70,29),(68,21),(61,18),(57,16)],ochre)
+    line(front,[(62,14),(68,17),(71,23)],ochre[4])
+    plate(front,[(43,8),(53,8),(56,11),(51,14),(45,12)],steel)
+    front[ellipse_mask(W,H,50,10,2,2)] = rgba(ochre[4])
+    dot(front,50,10,OUTLINE)
+    line(front,[(41,6),(52,7)],ivory[4])
+    # Console behind hands, with an angled lit instrument display.
+    plate(back,[(43,28),(51,28),(54,36),(50,41),(41,38)],steel)
+    plate(back,[(44,29),(49,29),(50,33),(44,33)],pal["accent"])
+    line(back,[(45,31),(48,31)],pal["glow"])
+    # Tub chassis below the seat; the pilot's torso remains visible above the rim.
+    plate(front,[(15,41),(22,39),(37,40),(48,36),(54,39),(54,50),(45,56),(25,55),(16,50)],armor)
+    line(front,[(19,42),(35,43),(47,39),(51,40)],ochre[4],width=2)
+    plate(front,[(25,46),(39,46),(41,52),(29,53)],armor)
+    for x in (29,33,37): line(front,[(x,47),(x,51)],steel[0])
+    # Guard rail and two mechanical control sticks: clearly belong to the cockpit.
+    line(front,[(21,36),(40,36),(43,33)],steel[0],width=3)
+    line(front,[(22,35),(39,35),(42,32)],steel[4])
+    line(front,[(23,36),(23,42)],steel[2],width=2)
+    line(front,[(38,35),(38,41)],steel[2],width=2)
+    for x in (33,40):
+        line(back,[(x,35),(x+1,31)],steel[3],width=2)
+        line(back,[(x,30),(x+3,30)],steel[0],width=2)
+    # Explicit hip beam, readable bearings and mounted tool axis.
+    plate(back,[(19,51),(43,51),(47,57),(43,63),(20,63),(15,57)],steel)
+    for x in (24,40):
+        paint(back,ellipse_mask(W,H,x,59,5,4),steel,noise=0)
+        back[ellipse_mask(W,H,x,59,2,2)] = rgba(ochre[2])
+    paint(front,ellipse_mask(W,H,46,48,7,7),steel,noise=0)
+    paint(front,ellipse_mask(W,H,46,48,4,4),ivory,noise=0)
+    front[ellipse_mask(W,H,46,48,1,1)] = OUTLINE
+    rivets(front,[(19,46),(25,43),(43,42),(46,54)],ivory[4])
+    return back,front,(32,34)
+
+
 def body_layers(palette: str, pal: dict, style: dict | None = None):
     """Open industrial cockpit, with explicit load-bearing frame and low cowl.
 
@@ -222,6 +290,8 @@ def body_layers(palette: str, pal: dict, style: dict | None = None):
     back, front = arr(W, H), arr(W, H)
     style = style or {"id": "champion_open"}
     ident = style.get("id", "champion_open")
+    if ident in ("champion_open", "sb_avian", "sb_avianproto"):
+        return champion_cockpit(pal)
     avian = ident == "champion_open" or ident in ("sb_avian", "sb_avianproto")
     human = ident == "venturer_open" or ident in ("sb_human", "sb_humanproto", "sb_military")
     primary = pal["primary"]
@@ -301,7 +371,7 @@ def body_layers(palette: str, pal: dict, style: dict | None = None):
 
 def body_icons(palette: str, pal: dict, body_back, body_front):
     # Use the actual front layer as the icon source, with a small transparent border.
-    src = Image.fromarray(body_front, "RGBA")
+    src = Image.alpha_composite(Image.fromarray(body_back, "RGBA"), Image.fromarray(body_front, "RGBA"))
     bbox = src.getbbox()
     if bbox is None:
         return Image.new("RGBA", (24, 24), (0, 0, 0, 0))
@@ -369,18 +439,19 @@ def arm_layers(palette: str, pal: dict, kind: str):
     line(body, [(8, 4), (8, 12)], (7, 11, 13, 255), width=2)
     extra = {}
     if kind == "drill":
-        bit0 = arr(14, 12)
-        bit1 = arr(14, 12)
+        bit0 = arr(20, 20)
+        bit1 = arr(20, 20)
         for b, phase in ((bit0, 0), (bit1, 1)):
-            tip = poly_mask(14, 12, [(1, 2), (8, 3), (13, 6), (8, 9), (1, 10)])
-            paint(b, tip, pal["primary"], seed=210 + phase, noise=0.015)
+            tip = poly_mask(20, 20, [(1, 1), (11, 4), (19, 10), (11, 16), (1, 19)])
+            paint(b, tip, [(25,31,36),(48,60,65),(79,93,98),(120,135,137),(171,182,175),(209,215,198)], seed=210 + phase, noise=0)
             for i in range(3):
-                x = 4 + i * 3 + phase
-                line(b, [(x, 3), (x + 1, 9)], (9, 13, 15, 255), width=2)
-                line(b, [(x + 1, 3), (x + 2, 9)], pal["secondary"][4])
-            b[ellipse_mask(14, 12, 12, 6, 1, 2)] = pal["glow"]
-        extra["bit0"] = (bit0, (1, 6))
-        extra["bit1"] = (bit1, (1, 6))
+                x = 4 + i * 5 + phase
+                line(b, [(x, 3), (x + 1, 17)], (9, 13, 15, 255), width=2)
+                line(b, [(x + 1, 4), (x + 2, 16)], (159,173,175,255))
+            b[~tip] = (0,0,0,0)
+            b[tip & ~erode(tip)] = OUTLINE
+        extra["bit0"] = (bit0, (1, 10))
+        extra["bit1"] = (bit1, (1, 10))
         tip_x, muzzle_x = 30, 30
     elif kind == "cannon":
         barrel = poly_mask(W, H, [(26, 6), (34, 6), (34, 10), (26, 10)])

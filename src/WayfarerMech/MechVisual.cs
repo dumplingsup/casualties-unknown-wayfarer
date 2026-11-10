@@ -94,7 +94,8 @@ namespace WayfarerMech
             MakeSprite(MechArt.Get("body_" + body.Id + "_front_" + palette), bodyFront, Vector3.zero, 32);
             PilotAnchor = new GameObject("pilot-anchor").transform;
             PilotAnchor.SetParent(torsoGroup, false);
-            PilotAnchor.localPosition = Px(body.PilotHeadX, body.PilotHeadY + 5f);
+            bool canopyBody = body.Id == "champion_open" || body.Id == "sb_avian" || body.Id == "sb_avianproto";
+            PilotAnchor.localPosition = Px(body.PilotHeadX, body.PilotHeadY + (canopyBody ? 10f : 5f));
             // A small warm cockpit light keeps the real face readable in the game's very
             // dark caves without brightening the whole level.
             var lightGo = new GameObject("cockpit-light");
@@ -151,6 +152,8 @@ namespace WayfarerMech
                 var part = i == 0 ? stats.LeftArm : stats.RightArm;
                 float x = i == 0 ? body.NearArmX : body.FarArmX;
                 float y = i == 0 ? body.NearArmY : body.FarArmY;
+                // Canopy cockpit has a high far-side hardpoint: cannon above drill.
+                if (canopyBody && i == 1) { x = 12f; y = -8f; }
                 arms[i] = BuildArm(i, part, Px(x, y));
             }
 
@@ -232,7 +235,9 @@ namespace WayfarerMech
             {
                 rig.Bit = new GameObject("drill-bit").transform;
                 rig.Bit.SetParent(rig.Pivot, false);
-                rig.Bit.localPosition = Px(part.ToolTipX - 13f, part.ToolTipY);
+                var bitInfo = MechArt.Get("arm_drill_bit0_" + palette);
+                float reach = bitInfo != null ? bitInfo.Width - 1 - bitInfo.PivotX : 13f;
+                rig.Bit.localPosition = Px(part.ToolTipX - reach, part.ToolTipY);
                 rig.BitFrames = new[]
                 {
                     MechArt.Sprite("arm_drill_bit0_" + palette),

@@ -13,7 +13,9 @@ class ModularAssets(unittest.TestCase):
         # head/upper-torso opening even on catalogue/theme variants.
         for path in ASSETS.glob("body_*_front_*.png"):
             with self.subTest(path=path.name), Image.open(path) as im:
-                self.assertIsNone(im.getchannel("A").crop((20, 2, 36, 25)).getbbox())
+                canopy = any(path.name.startswith("body_" + ident + "_front_") for ident in ("champion_open", "sb_avian", "sb_avianproto"))
+                window = (24, 17, 42, 30) if canopy else (20, 2, 36, 25)
+                self.assertIsNone(im.getchannel("A").crop(window).getbbox())
 
     def test_every_manifest_entry_matches_its_png(self):
         parts = json.loads((ASSETS / "parts.json").read_text())
