@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace WayfarerMech
 {
-    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.1")]
+    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.2")]
     [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -59,7 +59,7 @@ namespace WayfarerMech
             gameObject.AddComponent<AssemblyPanel>();
             patches = new Harmony(Guid);
             patches.PatchAll(typeof(Plugin).Assembly);
-            LogInfo("Wayfarer 0.4.1 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
+            LogInfo("Wayfarer 0.4.2 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
         }
 
         public static bool Ready => PlayerCamera.main && PlayerCamera.main.body && WorldGeneration.world &&
@@ -135,24 +135,23 @@ namespace WayfarerMech
 
         public void DrawHUD()
         {
-            if (!Ready || !Mech) return;
+            if (!Ready || !Mech || AssemblyPanel.IsOpen) return;
             string jump = KeyBinds.GetBindName("jump");
-            string left = KeyBinds.GetBindName("left");
-            string right = KeyBinds.GetBindName("right");
-            string text;
-            string loadout = Mech.Loadout != null ? Mech.Loadout.Summary : "";
-            if (Piloting)
-            {
-                string state = Mech.ThrustActive ? "  喷气中 JET" : (Mech.CeilingBlocked ? "  顶碰 CEILING" : "");
-                text = "WAYFARER  /  无损机体  /  " + loadout + "\n" +
-                       left + "/" + right + " 移动 · 长按 " + jump + " 喷气 · 左键左臂 · 右键右臂 · H 喇叭 · F 下机" + state;
-            }
-            else
-            {
-                text = "WAYFARER 待机  ·  F 进入驾驶舱  ·  G 回收  ·  P 装配\n" + loadout +
-                       "\n长按 " + jump + " 持续喷气 · 双臂独立操作 · 开放舱显示真实主角";
-            }
-            GUI.Box(new Rect(18, Screen.height - 98, Math.Min(900, Screen.width - 36), 80), text);
+            string left = KeyBinds.GetBindName("left"), right = KeyBinds.GetBindName("right");
+            float width = Mathf.Min(310f, Screen.width - 24f);
+            var area = new Rect(Screen.width - width - 14, 86, width, 94);
+            GUI.DrawTexture(area, Texture2D.whiteTexture, ScaleMode.StretchToFill, false,
+                0f, new Color(0.045f, 0.065f, 0.075f, 0.9f), 0f, 0f);
+            var title = new GUIStyle(GUI.skin.label) { fontSize = 13, alignment = TextAnchor.UpperLeft };
+            title.normal.textColor = new Color(0.83f, 0.83f, 0.68f);
+            var detail = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true, alignment = TextAnchor.UpperLeft };
+            string state = Mech.ThrustActive ? "喷气" : Mech.CeilingBlocked ? "顶碰" : "无损机体";
+            GUI.Label(new Rect(area.x + 12, area.y + 8, width - 24, 22),
+                "WAYFARER  ·  " + (Piloting ? state : "待机"), title);
+            string controls = Piloting
+                ? left + "/" + right + " 移动   长按 " + jump + " 飞行\n左/右键：双臂   H 喇叭   F 下机"
+                : "F 进入驾驶舱   G 回收\nP 装配 · 换装与配色";
+            GUI.Label(new Rect(area.x + 12, area.y + 34, width - 24, 54), controls, detail);
         }
 
         void OnDestroy()

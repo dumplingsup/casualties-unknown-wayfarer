@@ -8,6 +8,13 @@ ASSETS = Path(__file__).resolve().parents[1] / "src/WayfarerMech/Assets"
 
 
 class ModularAssets(unittest.TestCase):
+    def test_front_armor_keeps_pilot_face_window_open(self):
+        # Native head is now seated 5 px lower. Front armor must stay below the
+        # head/upper-torso opening even on catalogue/theme variants.
+        for path in ASSETS.glob("body_*_front_*.png"):
+            with self.subTest(path=path.name), Image.open(path) as im:
+                self.assertIsNone(im.getchannel("A").crop((20, 2, 36, 25)).getbbox())
+
     def test_every_manifest_entry_matches_its_png(self):
         parts = json.loads((ASSETS / "parts.json").read_text())
         self.assertGreater(len(parts), 300)

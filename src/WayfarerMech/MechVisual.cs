@@ -94,7 +94,7 @@ namespace WayfarerMech
             MakeSprite(MechArt.Get("body_" + body.Id + "_front_" + palette), bodyFront, Vector3.zero, 32);
             PilotAnchor = new GameObject("pilot-anchor").transform;
             PilotAnchor.SetParent(torsoGroup, false);
-            PilotAnchor.localPosition = Px(body.PilotHeadX, body.PilotHeadY);
+            PilotAnchor.localPosition = Px(body.PilotHeadX, body.PilotHeadY + 5f);
             // A small warm cockpit light keeps the real face readable in the game's very
             // dark caves without brightening the whole level.
             var lightGo = new GameObject("cockpit-light");
@@ -179,7 +179,7 @@ namespace WayfarerMech
         {
             var leg = new Leg { Front = front, Part = part };
             var hipT = new GameObject(front ? "hip-front" : "hip-back").transform;
-            hipT.SetParent(VisualRoot, false);
+            hipT.SetParent(torsoGroup, false);
             hipT.localPosition = hip;
             var thighInfo = MechArt.Get(part.ArtPrefix + "_thigh_" + Loadout.PaletteId);
             leg.Thigh = new GameObject(front ? "thigh-front" : "thigh-back").transform;

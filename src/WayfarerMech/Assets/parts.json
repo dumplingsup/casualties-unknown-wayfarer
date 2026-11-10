@@ -3150,436 +3150,436 @@
     "w": 24
   },
   "leg_arc_foot_bone": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_arc_foot_olive": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_arc_foot_steel": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_arc_foot_violet": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_arc_shin_bone": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_arc_shin_olive": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_arc_shin_steel": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_arc_shin_violet": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_arc_thigh_bone": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_arc_thigh_olive": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_arc_thigh_steel": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_arc_thigh_violet": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_hopper_foot_bone": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_hopper_foot_olive": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_hopper_foot_steel": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_hopper_foot_violet": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_hopper_shin_bone": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_hopper_shin_olive": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_hopper_shin_steel": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_hopper_shin_violet": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_hopper_thigh_bone": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_hopper_thigh_olive": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_hopper_thigh_steel": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_hopper_thigh_violet": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_sleek_foot_bone": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_sleek_foot_olive": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_sleek_foot_steel": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_sleek_foot_violet": {
-    "h": 9,
+    "h": 10,
     "pivot": [
-      11,
-      2
+      10,
+      3
     ],
     "ppu": 11.0,
-    "w": 26
+    "w": 24
   },
   "leg_sleek_shin_bone": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_sleek_shin_olive": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_sleek_shin_steel": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_sleek_shin_violet": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       8,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 16
   },
   "leg_sleek_thigh_bone": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_sleek_thigh_olive": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_sleek_thigh_steel": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_sleek_thigh_violet": {
-    "h": 12,
+    "h": 17,
     "pivot": [
       9,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 18
   },
   "leg_strider_foot_bone": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_strider_foot_olive": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_strider_foot_steel": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_strider_foot_violet": {
-    "h": 8,
+    "h": 10,
     "pivot": [
       10,
-      2
+      3
     ],
     "ppu": 11.0,
     "w": 24
   },
   "leg_strider_shin_bone": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_strider_shin_olive": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_strider_shin_steel": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_strider_shin_violet": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      7,
-      2
+      8,
+      3
     ],
     "ppu": 11.0,
-    "w": 14
+    "w": 16
   },
   "leg_strider_thigh_bone": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_strider_thigh_olive": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_strider_thigh_steel": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "leg_strider_thigh_violet": {
-    "h": 14,
+    "h": 17,
     "pivot": [
-      8,
-      2
+      9,
+      3
     ],
     "ppu": 11.0,
-    "w": 16
+    "w": 18
   },
   "shadow": {
     "h": 9,

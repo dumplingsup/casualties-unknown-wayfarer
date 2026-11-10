@@ -1,4 +1,4 @@
-"""Generate original Starbound-inspired modular mech art for Wayfarer v0.3.
+"""Generate original modular mech art for Wayfarer v0.4.2.
 
 This is original pixel art: the shapes, palettes, outlines and pixels were drawn by
 this script. The Starbound Champion-00 asset extracted from the user's local install
@@ -213,223 +213,90 @@ def ramp_palette(rgb):
 
 
 def body_layers(palette: str, pal: dict, style: dict | None = None):
-    # Extra width on the right is the Avian beak; the pivot stays at x=28 so the
-    # existing seat, legs and cockpit coordinates keep their world positions.
+    """Open industrial cockpit, with explicit load-bearing frame and low cowl.
+
+    Native coordinates are the contract with MechCatalog: head (26,15), near
+    shoulder (42,44), hips (20/36,56). Ornament must not occupy the face window.
+    """
     W, H, PX, PY = 64, 60, 28, 30
-    back = arr(W, H)
-    front = arr(W, H)
-    ivory = IVORY
-    # New Starbound-catalogue bodies use a themed rust/accent ramp while keeping
-    # the same ivory beak/crest. This is an original recolour/shape variant.
-    if style:
-        themed = dict(pal)
-        themed["secondary"] = ramp_palette(style.get("theme_secondary", (90, 52, 38)))
-        themed["accent"] = ramp_palette(style.get("theme_accent", (44, 94, 86)))
-        pal = themed
+    back, front = arr(W, H), arr(W, H)
+    style = style or {"id": "champion_open"}
+    ident = style.get("id", "champion_open")
+    avian = ident == "champion_open" or ident in ("sb_avian", "sb_avianproto")
+    human = ident == "venturer_open" or ident in ("sb_human", "sb_humanproto", "sb_military")
+    primary = pal["primary"]
+    accent = ramp_palette(style.get("theme_secondary", pal["secondary"][3]))
+    steel = [(18, 25, 29), (33, 44, 48), (56, 69, 71), (90, 103, 100), (137, 147, 135)]
+    shell = IVORY if avian else primary
 
-    # ---- rear engine / fuel tank (back layer) ----
-    eng = poly_mask(W, H, [(2, 28), (5, 16), (13, 11), (25, 14), (29, 25), (25, 41), (16, 48), (6, 44), (2, 37)])
-    paint(back, eng, pal["dark"], seed=11, bottom_darken=0.1)
-    eng_band = rect_mask(W, H, (4, 25, 28, 32)) & eng
-    paint(back, eng_band, pal["primary"], seed=12, noise=0.02)
-    for y in (23, 27, 31):
-        line(back, [(3, y), (28, y + 1)], (10, 14, 18, 255))
-    # circular reactor and vent
-    reactor = ellipse_mask(W, H, 13, 36, 6, 6)
-    paint(back, reactor, pal["secondary"], seed=13, noise=0.015)
-    reactor_core = ellipse_mask(W, H, 13, 36, 2, 2)
-    back[reactor_core] = pal["glow"]
-    back[reactor & ~erode(reactor)] = OUTLINE
-    for i in range(3):
-        line(back, [(6 + i * 6, 18), (7 + i * 6, 25)], (8, 15, 17, 255))
-    # exhaust stacks
-    for x in (4, 9):
-        stack = rect_mask(W, H, (x, 7, x + 4, 16)) & eng
-        paint(back, stack, pal["secondary"], seed=20 + x, noise=0.02)
-        line(back, [(x + 1, 8), (x + 1, 15)], (7, 10, 12, 255))
-        line(back, [(x + 3, 8), (x + 3, 15)], (32, 44, 45, 255))
+    def panel(target, pts, ramp, seed=0):
+        mask = poly_mask(W, H, pts)
+        paint(target, mask, ramp, seed=seed, noise=0, bottom_darken=0.08)
+        return mask
 
-    # ---- seat back / rear cockpit rim ----
-    seat = poly_mask(W, H, [(12, 2), (23, 3), (25, 11), (23, 28), (17, 33), (12, 29), (10, 17)])
-    paint(back, seat, pal["primary"], seed=31, noise=0.025)
-    seat_inner = poly_mask(W, H, [(15, 8), (22, 8), (22, 24), (18, 27), (15, 24)])
-    paint(back, seat_inner, pal["secondary"], seed=32, noise=0.015)
-    for x in (17, 21):
-        line(back, [(x, 10), (x, 24)], (8, 12, 14, 255))
-    # roll bar behind the real head
-    line(back, [(10, 4), (9, 18), (12, 31)], (9, 12, 14, 255), width=3)
-    line(back, [(11, 4), (10, 18), (13, 30)], pal["primary"][4], width=1)
-    line(back, [(10, 4), (23, 4), (24, 12)], (9, 12, 14, 255), width=2)
-    line(back, [(11, 5), (22, 5), (23, 12)], pal["primary"][5], width=1)
-    # antenna
-    line(back, [(8, 19), (4, 5), (2, 0)], (8, 12, 16, 255))
-    dot(back, 2, 0, pal["glow"])
+    # Rear power spine, seat rails and a single paired exhaust. No decorative dome.
+    panel(back, [(5,22),(10,17),(18,18),(20,40),(15,47),(6,43)], steel)
+    panel(back, [(6,26),(13,24),(15,37),(7,38)], primary)
+    for y in (28,32,36): line(back, [(7,y),(12,y)], OUTLINE)
+    panel(back, [(13,8),(18,6),(21,12),(20,29),(16,34),(12,29)], steel)
+    panel(back, [(16,13),(20,13),(20,27),(17,29)], accent)
+    line(back, [(13,10),(13,31),(22,38)], steel[3], width=2)
+    # Dorsal feathers are short plates behind the seat, not a crown over the pilot.
+    if avian:
+        panel(back, [(7,22),(8,12),(13,3),(17,4),(14,14),(13,23)], shell)
+        panel(back, [(3,26),(4,18),(8,11),(11,12),(9,22)], shell)
+        line(back, [(9,18),(13,8)], shell[2])
+    elif human:
+        panel(back, [(6,14),(6,6),(10,6),(12,16)], steel)
+        line(back, [(7,7),(10,7)], steel[3])
+    else:
+        # Other catalogue families retain their theme, without inheriting a bird head.
+        deco = style.get("deco", "blocky")
+        tip = 5 if deco in ("fin", "leaf", "horns") else 11
+        panel(back, [(5,27),(5,14),(12,tip),(17,12),(14,28)], primary)
+        line(back, [(7,20),(12,12)], accent[4])
+    # Seat and low interior console behind the visible real torso.
+    panel(back, [(17,29),(33,29),(39,34),(34,41),(18,40),(13,35)], steel)
+    panel(back, [(19,30),(31,30),(31,34),(19,35)], accent)
+    panel(back, [(36,24),(42,24),(45,29),(41,34),(35,31)], steel)
+    line(back, [(38,26),(41,26)], pal["glow"])
 
-    # ---- swept avian wing / backpack fin (back layer) ----
-    # A single readable Avian silhouette element. It sits behind the seat and the
-    # real head, so it frames the cockpit instead of covering the pilot.
-    wing = poly_mask(W, H, [(1, 21), (2, 12), (7, 4), (14, 0), (22, 1), (25, 6), (20, 10), (14, 10), (9, 15), (6, 22)])
-    paint(back, wing, ivory, seed=80, noise=0.03, bottom_darken=0.18)
-    for a, b in [((4, 18), (11, 5)), ((8, 19), (16, 4)), ((12, 19), (20, 6)), ((16, 18), (22, 9))]:
-        line(back, [a, b], ivory[3])
-    wing_edge = wing & ~erode(wing)
-    back[wing_edge & (back[:, :, 3] > 0)] = OUTLINE
-    # A connected fan of further crest feathers behind the pilot. The real head
-    # covers the roots; the pale tips stay visible above the cockpit.
-    for idx, pts in enumerate([
-        [(19, 20), (30, 2), (37, 1), (35, 9), (27, 17)],
-        [(24, 19), (36, 5), (44, 6), (40, 14), (31, 19)],
-        [(28, 19), (41, 10), (47, 13), (42, 19), (34, 21)],
-    ]):
-        crest = poly_mask(W, H, pts)
-        paint(back, crest, ivory, seed=82 + idx, noise=0.03, bottom_darken=0.16)
-        base = (min(p[0] for p in pts) + 4, max(p[1] for p in pts) - 2)
-        tip = (max(p[0] for p in pts) - 2, min(p[1] for p in pts) + 2)
-        line(back, [base, tip], ivory[2 if idx < 2 else 3])
-        back[crest & ~erode(crest)] = OUTLINE
+    # Narrow, tapered hull. Broad clean planes instead of round nested plates.
+    panel(front, [(13,32),(19,29),(35,29),(44,34),(46,43),(39,49),(23,49),(14,43)], primary)
+    panel(front, [(14,32),(20,30),(35,30),(43,34),(41,37),(19,35)], accent)
+    line(front, [(17,32),(34,32),(41,35)], shell[4])
+    panel(front, [(17,38),(23,36),(36,37),(40,42),(35,47),(22,46)], shell)
+    line(front, [(21,39),(33,39)], shell[2])
+    line(front, [(22,45),(34,46)], OUTLINE)
+    # A small asymmetric service hatch supplies scale without pixel speckle.
+    panel(front, [(23,40),(29,40),(29,44),(23,44)], steel)
+    dot(front, 25, 41, pal["glow"])
+    rivets(front, [(18,36),(35,35),(37,44)], steel[4])
 
-    # ---- lower back skirt / hip frame ----
-    hipback = poly_mask(W, H, [(3, 42), (16, 45), (24, 40), (26, 49), (17, 54), (5, 50)])
-    paint(back, hipback, pal["secondary"], seed=41, noise=0.02)
-    add_outline_edges(back, hipback)
+    # Integrated prow below the pilot's head, never a second giant animal head.
+    if avian:
+        panel(front, [(39,27),(46,27),(55,32),(52,35),(43,34),(39,32)], shell)
+        line(front, [(43,32),(52,33)], shell[2])
+        panel(front, [(39,25),(44,25),(46,28),(40,29)], steel)
+        dot(front, 42, 27, pal["glow"])
+    else:
+        panel(front, [(39,27),(49,27),(51,34),(44,37),(39,33)], primary)
+        for y in (29,32): line(front, [(43,y),(48,y)], steel[0])
+        dot(front, 47, 28, pal["glow"])
 
-    # ---- front chest cowl and fender (front layer) ----
-    # The top is deliberately low: the real player's head and a slice of upper torso
-    # must remain unobstructed. The raised prow sits to the right of the head.
-    cowl = poly_mask(W, H, [(8, 34), (13, 28), (22, 26), (35, 27), (45, 32), (50, 40), (46, 50), (37, 55), (21, 53), (11, 47), (8, 41)])
-    paint(front, cowl, pal["primary"], seed=51, noise=0.03, bottom_darken=0.12)
-    # low cockpit rim and crash bar in front of the seat, below the pilot's chest
-    rim = poly_mask(W, H, [(9, 35), (15, 30), (23, 29), (36, 30), (45, 35), (47, 39), (39, 41), (24, 40), (14, 39)])
-    paint(front, rim, pal["secondary"], seed=52, noise=0.02)
-    line(front, [(10, 36), (23, 32), (36, 32), (45, 36)], (7, 11, 14, 255), width=2)
-    line(front, [(11, 35), (23, 31), (36, 31), (44, 35)], pal["primary"][5])
-    # ---- console / control area in front of the pilot's lower torso ----
-    console = poly_mask(W, H, [(25, 40), (39, 37), (43, 42), (42, 48), (29, 51), (24, 46)])
-    paint(front, console, pal["dark"], seed=61, noise=0.02)
-    screen = rect_mask(W, H, (30, 39, 38, 43)) & console
-    window(front, console, 30, 39, 38, 43, pal)
-    for x in (27, 33, 39):
-        line(front, [(x, 44), (x - 1, 48)], pal["primary"][3])
-        dot(front, x - 1, 48, pal["glow"])
-    # seat base / lap shield
-    lap = poly_mask(W, H, [(20, 46), (30, 45), (42, 48), (46, 55), (36, 58), (19, 54)])
-    paint(front, lap, pal["primary"], seed=62, noise=0.025)
-    hazard(front, lap, 22, 29, 49, 54, pal["accent"], phase=0)
-    line(front, [(30, 47), (43, 53)], (8, 12, 15, 255), width=2)
-    # front hip mount and shoulder mount
-    shoulder = ellipse_mask(W, H, 42, 42, 7, 8)
-    paint(front, shoulder, pal["secondary"], seed=71, noise=0.02)
-    shoulder_hole = ellipse_mask(W, H, 42, 42, 3, 3)
-    front[shoulder_hole] = (9, 15, 17, 255)
-    front[shoulder & ~erode(shoulder)] = OUTLINE
-    hip = ellipse_mask(W, H, 32, 54, 5, 5)
-    paint(front, hip, pal["dark"], seed=72)
-    # rivets and wear
-    rivets(front, [(17, 38), (24, 34), (35, 35), (44, 42), (22, 51), (39, 55)], pal["primary"][5])
-    # bottom step
-    step = poly_mask(W, H, [(24, 54), (34, 54), (39, 59), (27, 59)])
-    paint(front, step, pal["secondary"], seed=73, noise=0.02)
-
-    # Open-cockpit cutout: the game's real upper torso sits behind this opening.
-    # It is punched after the cowl so the front layer never paints over the chest.
-    cockpit_hole = poly_mask(W, H, [(17, 17), (37, 16), (43, 24), (39, 31), (27, 33), (17, 28), (13, 22)])
-    front[cockpit_hole] = (0, 0, 0, 0)
-    hole_edge = cockpit_hole & ~erode(cockpit_hole)
-    front[hole_edge] = OUTLINE
-    # small harness bar across the opening, below the chin, not across the face
-    line(front, [(18, 25), (28, 28), (39, 25)], pal["secondary"][4], width=2)
-    line(front, [(18, 24), (28, 27), (39, 24)], (8, 12, 14, 255))
-    dot(front, 28, 28, pal["glow"])
-
-    # ---- Avian shell: rust cockpit dome, sensor eye and a large pale beak ----
-    # These are original shapes inspired by the reference silhouette, not copied
-    # Starbound pixels. The pale beak and crest are the two strongest reads.
-    dome = poly_mask(W, H, [(41, 23), (47, 20), (53, 23), (56, 30), (54, 38), (48, 42), (42, 38), (39, 31)])
-    paint(front, dome, pal["secondary"], seed=91, noise=0.035, bottom_darken=0.12)
-    line(front, [(44, 22), (53, 25), (55, 33)], pal["secondary"][4])
-    line(front, [(42, 36), (48, 40)], pal["dark"][3])
-    add_outline_edges(front, dome)
-    # upper beak
-    upper = poly_mask(W, H, [(44, 27), (53, 25), (61, 29), (63, 33), (55, 35), (48, 34), (44, 32)])
-    paint(front, upper, ivory, seed=92, noise=0.025, bottom_darken=0.1)
-    for y, x0, x1 in ((29, 47, 60), (32, 46, 61)):
-        line(front, [(x0, y), (x1, y + 1)], ivory[3])
-    add_outline_edges(front, upper)
-    # lower beak / jaw
-    lower = poly_mask(W, H, [(45, 34), (56, 35), (62, 38), (58, 43), (50, 42), (44, 38)])
-    paint(front, lower, ivory, seed=93, noise=0.02, bottom_darken=0.24)
-    line(front, [(45, 35), (57, 36), (62, 38)], (8, 12, 14, 255), width=2)
-    line(front, [(47, 39), (57, 40)], ivory[2])
-    add_outline_edges(front, lower)
-    dot(front, 54, 29, (8, 12, 14, 255))
-    # sensor eye above the beak root
-    socket = ellipse_mask(W, H, 47, 25, 5, 4)
-    front[socket] = (8, 12, 14, 255)
-    iris = ellipse_mask(W, H, 47, 25, 3, 3)
-    front[iris] = rgba(pal["secondary"][4])
-    pupil = ellipse_mask(W, H, 48, 25, 1, 2)
-    front[pupil] = rgba(pal["glow"])
-    dot(front, 46, 24, (255, 255, 255, 255))
-    brow = poly_mask(W, H, [(41, 20), (51, 19), (54, 23), (47, 22), (41, 23)])
-    paint(front, brow, ivory, seed=94, noise=0.02)
-    add_outline_edges(front, brow)
-
-    # pale cockpit rails frame the real head without covering the face
-    rail_l = poly_mask(W, H, [(8, 13), (13, 10), (16, 14), (15, 27), (11, 31), (7, 24)])
-    rail_r = poly_mask(W, H, [(43, 12), (47, 14), (48, 21), (44, 25), (41, 21), (40, 15)])
-    for rail in (rail_l, rail_r):
-        paint(front, rail, ivory, seed=95, noise=0.02)
-        add_outline_edges(front, rail)
-    # pale chest plate below the cockpit, so the open head sits in a bone cradle
-    plate = poly_mask(W, H, [(16, 41), (29, 37), (43, 42), (45, 52), (36, 58), (21, 56), (13, 49)])
-    paint(front, plate, ivory, seed=96, noise=0.03, bottom_darken=0.12)
-    line(front, [(18, 45), (31, 41), (43, 46)], ivory[2])
-    hazard(front, plate, 21, 27, 48, 54, pal["accent"], phase=2)
-    add_outline_edges(front, plate)
-
-    if style:
-        deco = style.get("deco", "wing")
-        if deco in ("wing", "crown"):
-            extra = poly_mask(W, H, [(29, 21), (40, 2), (47, 1), (44, 9), (36, 19)])
-            paint(back, extra, ivory, seed=700, noise=0.03, bottom_darken=0.15)
-            line(back, [(31, 19), (43, 5)], ivory[2])
-            add_outline_edges(back, extra)
-        if deco == "fin":
-            fin = poly_mask(W, H, [(1, 33), (4, 18), (12, 9), (22, 13), (18, 22), (20, 31), (12, 39)])
-            paint(back, fin, pal["secondary"], seed=701, noise=0.03)
-            line(back, [(5, 20), (14, 13), (18, 22)], pal["accent"][4])
-            add_outline_edges(back, fin)
-        if deco == "leaf":
-            leaf = poly_mask(W, H, [(2, 28), (8, 15), (18, 6), (28, 10), (24, 18), (14, 24), (8, 34)])
-            paint(back, leaf, pal["accent"], seed=702, noise=0.035)
-            for a, b in (((6, 26), (22, 11)), ((10, 28), (25, 16))):
-                line(back, [a, b], pal["secondary"][4])
-            add_outline_edges(back, leaf)
-        if deco == "blocky":
-            plate2 = poly_mask(W, H, [(24, 12), (36, 9), (42, 12), (40, 20), (29, 22), (23, 18)])
-            paint(back, plate2, pal["primary"], seed=703, noise=0.02)
-            line(back, [(26, 14), (39, 12)], pal["secondary"][3])
-            add_outline_edges(back, plate2)
-        if deco == "reactor":
-            core = ellipse_mask(W, H, 14, 34, 7, 7)
-            paint(back, core, pal["dark"], seed=704, noise=0.01)
-            ring = ellipse_mask(W, H, 14, 34, 4, 4)
-            back[ring] = rgba(pal["glow"])
-            dot(back, 14, 34, pal["accent"][4])
-            add_outline_edges(back, core)
-        if deco == "visor":
-            visor = poly_mask(W, H, [(43, 22), (53, 21), (57, 24), (54, 27), (45, 26), (42, 24)])
-            paint(front, visor, pal["dark"], seed=705, noise=0.01)
-            line(front, [(45, 24), (55, 23)], pal["glow"])
-            add_outline_edges(front, visor)
-        if deco in ("horns", "crown"):
-            horn_l = poly_mask(W, H, [(41, 19), (43, 7), (47, 3), (46, 12), (45, 19)])
-            horn_r = poly_mask(W, H, [(50, 20), (53, 8), (57, 5), (55, 14), (53, 21)])
-            for horn in (horn_l, horn_r):
-                paint(front, horn, ivory, seed=706, noise=0.02, bottom_darken=0.2)
-                add_outline_edges(front, horn)
-
-    return back, front, (PX, PY)
+    # Pelvic crossmember connects the body to both animated hips. Armor ends above it.
+    panel(back, [(17,45),(38,45),(42,52),(38,57),(17,57),(13,52)], steel)
+    panel(front, [(25,47),(32,47),(33,53),(28,56),(24,52)], accent)
+    for cx in (20,36):
+        disc = ellipse_mask(W,H,cx,55,5,4)
+        paint(back, disc, steel, noise=0)
+        back[ellipse_mask(W,H,cx,55,2,2)] = rgba(steel[1])
+    # The tool axis is visible at the real rig pivot, rather than floating at the beak.
+    mount = ellipse_mask(W,H,42,44,6,6)
+    paint(front,mount,steel,noise=0)
+    front[ellipse_mask(W,H,42,44,3,3)] = rgba(accent[3])
+    front[ellipse_mask(W,H,42,44,1,1)] = OUTLINE
+    return back, front, (PX,PY)
 
 
 def body_icons(palette: str, pal: dict, body_back, body_front):
@@ -450,56 +317,35 @@ def body_icons(palette: str, pal: dict, body_back, body_front):
 # ---------------------------------------------------------------------------
 
 def leg_layers(palette: str, pal: dict, kind: str):
-    if kind == "strider":
-        TW, TH, TPX, TPY = 16, 14, 8, 2
-        SW, SH, SPX, SPY = 14, 14, 7, 2
-        FW, FH, FPX, FPY = 24, 8, 10, 2
-        thigh = arr(TW, TH)
-        shin = arr(SW, SH)
-        foot = arr(FW, FH)
-        # thigh: hip disc at top, knee at bottom
-        t = poly_mask(TW, TH, [(3, 2), (11, 2), (14, 7), (12, 12), (8, 13), (3, 10), (1, 6)])
-        paint(thigh, t, pal["primary"], seed=101, noise=0.02)
-        disc = ellipse_mask(TW, TH, 7, 5, 4, 4)
-        paint(thigh, disc, pal["secondary"], seed=102, noise=0.01)
-        thigh[ellipse_mask(TW, TH, 7, 5, 1, 1)] = (8, 12, 14, 255)
-        line(thigh, [(4, 9), (11, 10)], (8, 12, 14, 255))
-        # shin: reverse joint
-        s = poly_mask(SW, SH, [(4, 1), (10, 2), (12, 7), (9, 12), (4, 11), (2, 7)])
-        paint(shin, s, pal["secondary"], seed=111, noise=0.02)
-        line(shin, [(4, 3), (5, 10)], pal["primary"][4])
-        line(shin, [(9, 3), (8, 9)], (8, 12, 14, 255))
-        # foot: broad engineering pad
-        f = poly_mask(FW, FH, [(2, 3), (16, 2), (22, 4), (22, 6), (17, 7), (3, 7)])
-        paint(foot, f, pal["dark"], seed=121, noise=0.02)
-        tread = rect_mask(FW, FH, (4, 5, 20, 7)) & f
-        paint(foot, tread, pal["secondary"], seed=122, noise=0.01)
-        return {
-            "thigh": (thigh, (TPX, TPY)), "shin": (shin, (SPX, SPY)), "foot": (foot, (FPX, FPY)),
-            "thigh_len": 10, "shin_len": 10,
-        }
-    else:  # hopper
-        TW, TH, TPX, TPY = 18, 12, 9, 2
-        SW, SH, SPX, SPY = 16, 12, 8, 2
-        FW, FH, FPX, FPY = 26, 9, 11, 2
-        thigh = arr(TW, TH)
-        shin = arr(SW, SH)
-        foot = arr(FW, FH)
-        t = poly_mask(TW, TH, [(4, 1), (12, 2), (16, 6), (13, 10), (7, 11), (2, 7)])
-        paint(thigh, t, pal["secondary"], seed=151, noise=0.02)
-        coil = ellipse_mask(TW, TH, 9, 6, 4, 3)
-        paint(thigh, coil, pal["accent"], seed=152, noise=0.01)
-        thigh[ellipse_mask(TW, TH, 9, 6, 1, 1)] = (8, 12, 14, 255)
-        s = poly_mask(SW, SH, [(3, 1), (11, 1), (14, 5), (12, 10), (4, 10), (1, 6)])
-        paint(shin, s, pal["primary"], seed=161, noise=0.02)
-        line(shin, [(4, 3), (7, 9)], (8, 12, 14, 255), width=2)
-        f = poly_mask(FW, FH, [(1, 4), (18, 2), (24, 5), (24, 7), (18, 8), (2, 8)])
-        paint(foot, f, pal["dark"], seed=171, noise=0.02)
-        paint(foot, rect_mask(FW, FH, (3, 6, 23, 8)) & f, pal["accent"], seed=172, noise=0.01)
-        return {
-            "thigh": (thigh, (TPX, TPY)), "shin": (shin, (SPX, SPY)), "foot": (foot, (FPX, FPY)),
-            "thigh_len": 8, "shin_len": 8,
-        }
+    # Actual joint axes are 9 native pixels apart, matching the runtime legs.
+    steel = [(16,23,27),(32,42,46),(54,67,70),(87,102,104),(137,152,149)]
+    thigh, shin, foot = arr(18,17), arr(16,17), arr(24,10)
+    def plate(target, points, ramp):
+        mask = poly_mask(target.shape[1],target.shape[0],points)
+        paint(target,mask,ramp,noise=0)
+    # Hip socket, thigh box section, visible knee bearing.
+    plate(thigh, [(3,3),(6,0),(12,0),(16,4),(15,11),(12,15),(5,14),(2,9)], steel)
+    plate(thigh, [(5,4),(12,3),(14,6),(12,11),(5,10)], pal["primary"])
+    line(thigh,[(5,5),(11,5)],pal["primary"][4])
+    for cy in (3,12):
+        paint(thigh,ellipse_mask(18,17,9,cy,3,3),steel,noise=0)
+        thigh[ellipse_mask(18,17,9,cy,1,1)] = rgba(steel[1])
+    # Two-tone greave and one exposed hydraulic rod, rather than a chain of circles.
+    plate(shin,[(3,2),(10,0),(14,4),(13,11),(10,15),(4,15),(2,10)],steel)
+    plate(shin,[(7,4),(12,4),(12,11),(9,13),(6,10)],pal["primary"])
+    line(shin,[(4,5),(4,11)],steel[4],width=2)
+    line(shin,[(8,5),(11,5)],pal["accent"][3])
+    paint(shin,ellipse_mask(16,17,8,3,3,3),steel,noise=0)
+    shin[ellipse_mask(16,17,8,3,1,1)] = OUTLINE
+    if kind == "hopper":
+        for y in (6,8,10): line(shin,[(5,y),(10,y)],pal["accent"][3])
+    # Raised ankle and short chamfered toe; the sole is visibly load-bearing.
+    plate(foot,[(4,3),(8,1),(13,1),(16,4),(21,5),(23,7),(21,9),(2,9),(1,6)],steel)
+    plate(foot,[(5,4),(13,3),(17,5),(19,6),(4,6)],pal["primary"])
+    line(foot,[(3,8),(21,8)],steel[0],width=2)
+    for x in (5,10,15,20): dot(foot,x,8,steel[2])
+    return {"thigh":(thigh,(9,3)),"shin":(shin,(8,3)),"foot":(foot,(10,3)),
+            "thigh_len":9,"shin_len":9}
 
 
 # ---------------------------------------------------------------------------
@@ -514,11 +360,11 @@ def arm_layers(palette: str, pal: dict, kind: str):
     paint(body, mount, pal["secondary"], seed=201, noise=0.015)
     body[ellipse_mask(W, H, 7, 8, 2, 2)] = (8, 12, 14, 255)
     upper = poly_mask(W, H, [(6, 5), (16, 5), (19, 8), (16, 11), (6, 11), (4, 8)])
-    paint(body, upper, pal["primary"], seed=202, noise=0.02)
+    paint(body, upper, pal["dark"], seed=202, noise=0)
     elbow = ellipse_mask(W, H, 18, 8, 4, 4)
     paint(body, elbow, pal["dark"], seed=203, noise=0.01)
     forearm = poly_mask(W, H, [(18, 4), (27, 5), (30, 8), (27, 11), (18, 12), (16, 8)])
-    paint(body, forearm, pal["secondary"], seed=204, noise=0.02)
+    paint(body, forearm, pal["primary"], seed=204, noise=0)
     hazard(body, forearm, 20, 26, 8, 11, pal["accent"], phase=2)
     line(body, [(8, 4), (8, 12)], (7, 11, 13, 255), width=2)
     extra = {}
@@ -622,7 +468,7 @@ def horn_layers(pal: dict):
 def main():
     manifest = {}
     previews = []
-    body_specs = [("champion_open", None), ("venturer_open", None)]
+    body_specs = [("champion_open", {"id": "champion_open"}), ("venturer_open", {"id": "venturer_open"})]
     body_specs += [(b["id"], b) for b in CATALOG.get("bodies", [])]
     preview_ids = {"champion_open", "venturer_open"} | {
         b["id"] for b in CATALOG.get("bodies", [])[:8]
@@ -631,16 +477,6 @@ def main():
         # body
         for body_id, style in body_specs:
             back, front, (px, py) = body_layers(palette, pal, style)
-            # A small but real silhouette difference for the second body.
-            if body_id == "venturer_open":
-                # Recolour/widen the front cowl by adding a grille and twin exhausts.
-                W, H = front.shape[1], front.shape[0]
-                grille = rect_mask(W, H, (22, 33, 39, 40))
-                paint(front, grille, pal["dark"], seed=501, noise=0.01)
-                for x in range(24, 39, 4):
-                    line(front, [(x, 34), (x, 39)], (8, 12, 14, 255))
-                for x in (3, 9):
-                    line(back, [(x, 2), (x, 12)], (8, 12, 14, 255), width=2)
             save(back, f"body_{body_id}_back_{palette}", (px, py), manifest, *back.shape[1::-1])
             save(front, f"body_{body_id}_front_{palette}", (px, py), manifest, *front.shape[1::-1])
             if palette == "bone":

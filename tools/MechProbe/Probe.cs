@@ -204,7 +204,7 @@ public class Probe : BaseUnityPlugin
             Logger.LogInfo("PROBE_AUTO_BOARDED pilotProxy=" + (m != null && m.PilotProxy != null && m.PilotProxy.HasFace));
             if (fakeInput && !perfMode)
             {
-                scriptStage = combatTest ? 30 : ceilingTest ? 60 : lifecycleTest ? 70 : layerTest ? 80 : 10;
+                scriptStage = Environment.GetEnvironmentVariable("CU_PROBE_ART") == "1" ? 90 : combatTest ? 30 : ceilingTest ? 60 : lifecycleTest ? 70 : layerTest ? 80 : 10;
                 scriptNext = Time.unscaledTime + 0.5f;
             }
             else if (perfMode)
@@ -237,6 +237,59 @@ public class Probe : BaseUnityPlugin
         if (Time.unscaledTime < scriptNext) return;
         switch (scriptStage)
         {
+            case 90:
+                Capture("art-01-idle-right.png");
+                scriptStage = 190; scriptNext = Time.unscaledTime + 0.15f;
+                break;
+            case 190:
+                ProbeInput.SetKey(KeyCode.D, true);
+                ProbeInput.SetMousePos(new Vector3(950, 360, 0));
+                scriptStage = 91; scriptNext = Time.unscaledTime + 0.65f;
+                break;
+            case 91:
+                Capture("art-02-walk-right.png");
+                scriptStage = 191; scriptNext = Time.unscaledTime + 0.15f;
+                break;
+            case 191:
+                ProbeInput.SetKey(KeyCode.D, false);
+                ProbeInput.SetKey(KeyCode.A, true);
+                ProbeInput.SetMousePos(new Vector3(320, 360, 0));
+                scriptStage = 92; scriptNext = Time.unscaledTime + 0.7f;
+                break;
+            case 92:
+                Capture("art-03-walk-left.png");
+                scriptStage = 192; scriptNext = Time.unscaledTime + 0.15f;
+                break;
+            case 192:
+                ProbeInput.SetKey(KeyCode.A, false);
+                ProbeInput.SetKey(KeyCode.Space, true);
+                scriptStage = 93; scriptNext = Time.unscaledTime + 0.65f;
+                break;
+            case 93:
+                Capture("art-04-jet-left.png");
+                scriptStage = 193; scriptNext = Time.unscaledTime + 0.15f;
+                break;
+            case 193:
+                ProbeInput.SetMousePos(new Vector3(950, 360, 0));
+                scriptStage = 94; scriptNext = Time.unscaledTime + 0.45f;
+                break;
+            case 94:
+                Capture("art-05-jet-right.png");
+                scriptStage = 194; scriptNext = Time.unscaledTime + 0.15f;
+                break;
+            case 194:
+                ProbeInput.SetKey(KeyCode.Space, false);
+                scriptStage = 95; scriptNext = Time.unscaledTime + 0.5f;
+                break;
+            case 95:
+                Capture("art-06-coast.png");
+                scriptStage = 96; scriptNext = Time.unscaledTime + 1.0f;
+                break;
+            case 96:
+                Capture("art-07-descent.png");
+                Logger.LogInfo("PROBE_ART_POSES_CAPTURED grounded=" + m.Grounded);
+                scriptStage = 15; scriptNext = Time.unscaledTime + 0.8f;
+                break;
             case 10:
                 ProbeInput.SetKey(KeyCode.Space, true);
                 ProbeInput.SetKey(KeyCode.D, false);
