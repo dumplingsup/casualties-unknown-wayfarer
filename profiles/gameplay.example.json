@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "game": "casualties-unknown",
+  "description": "Declarative acceptance cases; no runner is implemented yet.",
+  "profileLock": "artifacts/titan-v1.lock.json",
+  "isolation": {"status": "NOT_RUN", "actualDataPath": null},
+  "cases": [
+    {
+      "id": "craft-and-equip",
+      "mode": "UI",
+      "preconditions": ["isolated save path verified", "world ready", "materials fixture recorded"],
+      "actions": ["open crafting UI", "craft target item", "equip via normal UI", "move and use"],
+      "assertions": ["materials deducted correctly", "one result created", "intended state change observed", "visual layers reviewed", "no new unexplained errors"],
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    },
+    {
+      "id": "save-restart-reload",
+      "mode": "UI+observation",
+      "preconditions": ["target item equipped", "persisted fields captured"],
+      "actions": ["save through game", "exit game process", "restart same profile", "load save", "use target item again"],
+      "assertions": ["id and inventory preserved", "charge and condition preserved within declared tolerance", "custom persisted fields restored", "no duplicate registrations"],
+      "status": "NOT_RUN",
+      "observed": null,
+      "evidence": []
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Art generators and Python verification; cumod itself uses only the standard library.
+Pillow==12.1.1
+numpy==2.4.3

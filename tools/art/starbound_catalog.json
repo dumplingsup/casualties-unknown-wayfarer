@@ -1,0 +1,1368 @@
+{
+  "source": "local Starbound item list; IDs/names only; original art adaptations",
+  "bodies": [
+    {
+      "id": "sb_apex",
+      "starbound_id": "apex",
+      "name": "Dominion",
+      "color": "red",
+      "deco": "horns",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.1,
+      "jump": 0.92,
+      "thrust": 1.08,
+      "mass": 1.2,
+      "theme_secondary": [
+        112,
+        42,
+        35
+      ],
+      "theme_accent": [
+        219,
+        254,
+        255
+      ],
+      "art": "body_sb_apex"
+    },
+    {
+      "id": "sb_apexproto",
+      "starbound_id": "apexproto",
+      "name": "Dominion-00",
+      "color": "red",
+      "deco": "horns",
+      "hull": [
+        4.7,
+        6.9
+      ],
+      "move": 1.02,
+      "jump": 0.97,
+      "thrust": 1.03,
+      "mass": 1.05,
+      "theme_secondary": [
+        112,
+        42,
+        35
+      ],
+      "theme_accent": [
+        219,
+        254,
+        255
+      ],
+      "art": "body_sb_apexproto"
+    },
+    {
+      "id": "sb_avian",
+      "starbound_id": "avian",
+      "name": "Champion",
+      "color": "gold",
+      "deco": "wing",
+      "hull": [
+        4.8,
+        7.1
+      ],
+      "move": 1.0,
+      "jump": 1.04,
+      "thrust": 1.04,
+      "mass": 1.06,
+      "theme_secondary": [
+        112,
+        94,
+        50
+      ],
+      "theme_accent": [
+        219,
+        228,
+        250
+      ],
+      "art": "body_sb_avian"
+    },
+    {
+      "id": "sb_avianproto",
+      "starbound_id": "avianproto",
+      "name": "Champion-00",
+      "color": "gold",
+      "deco": "wing",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 1.0,
+      "jump": 1.0,
+      "thrust": 1.0,
+      "mass": 1.0,
+      "theme_secondary": [
+        112,
+        94,
+        50
+      ],
+      "theme_accent": [
+        219,
+        228,
+        250
+      ],
+      "art": "body_sb_avianproto"
+    },
+    {
+      "id": "sb_bad",
+      "starbound_id": "bad",
+      "name": "Beat",
+      "color": "crimson",
+      "deco": "blocky",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 1.06,
+      "jump": 0.94,
+      "thrust": 1.06,
+      "mass": 1.12,
+      "theme_secondary": [
+        96,
+        28,
+        38
+      ],
+      "theme_accent": [
+        227,
+        255,
+        255
+      ],
+      "art": "body_sb_bad"
+    },
+    {
+      "id": "sb_cultist",
+      "starbound_id": "cultist",
+      "name": "Occasus",
+      "color": "violet",
+      "deco": "fin",
+      "hull": [
+        4.8,
+        7.1
+      ],
+      "move": 1.02,
+      "jump": 1.02,
+      "thrust": 1.04,
+      "mass": 1.08,
+      "theme_secondary": [
+        84,
+        48,
+        110
+      ],
+      "theme_accent": [
+        233,
+        251,
+        220
+      ],
+      "art": "body_sb_cultist"
+    },
+    {
+      "id": "sb_cultist2",
+      "starbound_id": "cultist2",
+      "name": "Occasus-2",
+      "color": "violet",
+      "deco": "crown",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.05,
+      "jump": 1.05,
+      "thrust": 1.08,
+      "mass": 1.12,
+      "theme_secondary": [
+        84,
+        48,
+        110
+      ],
+      "theme_accent": [
+        233,
+        251,
+        220
+      ],
+      "art": "body_sb_cultist2"
+    },
+    {
+      "id": "sb_exodus",
+      "starbound_id": "exodus",
+      "name": "Exodus",
+      "color": "black-gold",
+      "deco": "reactor",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.08,
+      "jump": 1.0,
+      "thrust": 1.1,
+      "mass": 1.16,
+      "theme_secondary": [
+        56,
+        50,
+        42
+      ],
+      "theme_accent": [
+        247,
+        250,
+        254
+      ],
+      "art": "body_sb_exodus"
+    },
+    {
+      "id": "sb_floran",
+      "starbound_id": "floran",
+      "name": "Golem",
+      "color": "green",
+      "deco": "leaf",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 1.0,
+      "jump": 1.08,
+      "thrust": 1.04,
+      "mass": 1.06,
+      "theme_secondary": [
+        64,
+        94,
+        46
+      ],
+      "theme_accent": [
+        243,
+        228,
+        252
+      ],
+      "art": "body_sb_floran"
+    },
+    {
+      "id": "sb_floranproto",
+      "starbound_id": "floranproto",
+      "name": "Golem-00",
+      "color": "green",
+      "deco": "leaf",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 1.0,
+      "jump": 1.04,
+      "thrust": 1.02,
+      "mass": 1.0,
+      "theme_secondary": [
+        64,
+        94,
+        46
+      ],
+      "theme_accent": [
+        243,
+        228,
+        252
+      ],
+      "art": "body_sb_floranproto"
+    },
+    {
+      "id": "sb_glitch",
+      "starbound_id": "glitch",
+      "name": "Arthuria",
+      "color": "grey-gold",
+      "deco": "blocky",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 0.98,
+      "jump": 0.98,
+      "thrust": 1.06,
+      "mass": 1.12,
+      "theme_secondary": [
+        88,
+        88,
+        82
+      ],
+      "theme_accent": [
+        231,
+        231,
+        234
+      ],
+      "art": "body_sb_glitch"
+    },
+    {
+      "id": "sb_glitchproto",
+      "starbound_id": "glitchproto",
+      "name": "Arthuria-00",
+      "color": "grey-gold",
+      "deco": "blocky",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 0.98,
+      "jump": 1.0,
+      "thrust": 1.03,
+      "mass": 1.04,
+      "theme_secondary": [
+        88,
+        88,
+        82
+      ],
+      "theme_accent": [
+        231,
+        231,
+        234
+      ],
+      "art": "body_sb_glitchproto"
+    },
+    {
+      "id": "sb_hero",
+      "starbound_id": "hero",
+      "name": "Hero",
+      "color": "blue-gold",
+      "deco": "wing",
+      "hull": [
+        4.8,
+        7.1
+      ],
+      "move": 1.04,
+      "jump": 1.04,
+      "thrust": 1.06,
+      "mass": 1.08,
+      "theme_secondary": [
+        52,
+        76,
+        128
+      ],
+      "theme_accent": [
+        249,
+        237,
+        211
+      ],
+      "art": "body_sb_hero"
+    },
+    {
+      "id": "sb_human",
+      "starbound_id": "human",
+      "name": "Venturer",
+      "color": "blue-red",
+      "deco": "visor",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 1.0,
+      "jump": 1.0,
+      "thrust": 1.02,
+      "mass": 1.04,
+      "theme_secondary": [
+        62,
+        82,
+        120
+      ],
+      "theme_accent": [
+        244,
+        234,
+        215
+      ],
+      "art": "body_sb_human"
+    },
+    {
+      "id": "sb_humanproto",
+      "starbound_id": "humanproto",
+      "name": "Venturer-00",
+      "color": "blue-red",
+      "deco": "visor",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 1.0,
+      "jump": 1.0,
+      "thrust": 1.0,
+      "mass": 1.0,
+      "theme_secondary": [
+        62,
+        82,
+        120
+      ],
+      "theme_accent": [
+        244,
+        234,
+        215
+      ],
+      "art": "body_sb_humanproto"
+    },
+    {
+      "id": "sb_hylotl",
+      "starbound_id": "hylotl",
+      "name": "Kabuto",
+      "color": "teal-white",
+      "deco": "fin",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 1.02,
+      "jump": 1.06,
+      "thrust": 1.04,
+      "mass": 1.06,
+      "theme_secondary": [
+        46,
+        98,
+        102
+      ],
+      "theme_accent": [
+        252,
+        226,
+        224
+      ],
+      "art": "body_sb_hylotl"
+    },
+    {
+      "id": "sb_hylotlproto",
+      "starbound_id": "hylotlproto",
+      "name": "Kabuto-00",
+      "color": "teal-white",
+      "deco": "fin",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 1.0,
+      "jump": 1.04,
+      "thrust": 1.02,
+      "mass": 1.0,
+      "theme_secondary": [
+        46,
+        98,
+        102
+      ],
+      "theme_accent": [
+        252,
+        226,
+        224
+      ],
+      "art": "body_sb_hylotlproto"
+    },
+    {
+      "id": "sb_iris",
+      "starbound_id": "iris",
+      "name": "Cyclops",
+      "color": "lavender-teal",
+      "deco": "visor",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.04,
+      "jump": 1.0,
+      "thrust": 1.08,
+      "mass": 1.12,
+      "theme_secondary": [
+        108,
+        78,
+        138
+      ],
+      "theme_accent": [
+        221,
+        236,
+        206
+      ],
+      "art": "body_sb_iris"
+    },
+    {
+      "id": "sb_military",
+      "starbound_id": "military",
+      "name": "USCM",
+      "color": "olive-red",
+      "deco": "blocky",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.02,
+      "jump": 0.96,
+      "thrust": 1.1,
+      "mass": 1.2,
+      "theme_secondary": [
+        86,
+        88,
+        48
+      ],
+      "theme_accent": [
+        232,
+        231,
+        251
+      ],
+      "art": "body_sb_military"
+    },
+    {
+      "id": "sb_miniknog",
+      "starbound_id": "miniknog",
+      "name": "Miniknog",
+      "color": "grey-green",
+      "deco": "visor",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.04,
+      "jump": 1.0,
+      "thrust": 1.08,
+      "mass": 1.16,
+      "theme_secondary": [
+        72,
+        92,
+        68
+      ],
+      "theme_accent": [
+        239,
+        229,
+        241
+      ],
+      "art": "body_sb_miniknog"
+    },
+    {
+      "id": "sb_novakid",
+      "starbound_id": "novakid",
+      "name": "Marshal",
+      "color": "orange-blue",
+      "deco": "crown",
+      "hull": [
+        4.8,
+        7.0
+      ],
+      "move": 1.06,
+      "jump": 1.04,
+      "thrust": 1.02,
+      "mass": 1.04,
+      "theme_secondary": [
+        136,
+        78,
+        34
+      ],
+      "theme_accent": [
+        207,
+        236,
+        255
+      ],
+      "art": "body_sb_novakid"
+    },
+    {
+      "id": "sb_novakidproto",
+      "starbound_id": "novakidproto",
+      "name": "Marshal-00",
+      "color": "orange-blue",
+      "deco": "crown",
+      "hull": [
+        4.6,
+        6.9
+      ],
+      "move": 1.03,
+      "jump": 1.02,
+      "thrust": 1.0,
+      "mass": 1.0,
+      "theme_secondary": [
+        136,
+        78,
+        34
+      ],
+      "theme_accent": [
+        207,
+        236,
+        255
+      ],
+      "art": "body_sb_novakidproto"
+    },
+    {
+      "id": "sb_peacekeeper",
+      "starbound_id": "peacekeeper",
+      "name": "Peacekeeper",
+      "color": "white-blue",
+      "deco": "wing",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.02,
+      "jump": 1.02,
+      "thrust": 1.08,
+      "mass": 1.12,
+      "theme_secondary": [
+        128,
+        134,
+        140
+      ],
+      "theme_accent": [
+        211,
+        208,
+        205
+      ],
+      "art": "body_sb_peacekeeper"
+    },
+    {
+      "id": "sb_penguin",
+      "starbound_id": "penguin",
+      "name": "Shockhopper",
+      "color": "black-white",
+      "deco": "fin",
+      "hull": [
+        4.8,
+        6.9
+      ],
+      "move": 0.98,
+      "jump": 1.02,
+      "thrust": 1.04,
+      "mass": 1.04,
+      "theme_secondary": [
+        60,
+        60,
+        62
+      ],
+      "theme_accent": [
+        245,
+        245,
+        244
+      ],
+      "art": "body_sb_penguin"
+    },
+    {
+      "id": "sb_pirate",
+      "starbound_id": "pirate",
+      "name": "Skulduggery",
+      "color": "red-dark",
+      "deco": "horns",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.06,
+      "jump": 0.96,
+      "thrust": 1.08,
+      "mass": 1.12,
+      "theme_secondary": [
+        86,
+        28,
+        30
+      ],
+      "theme_accent": [
+        232,
+        255,
+        255
+      ],
+      "art": "body_sb_pirate"
+    },
+    {
+      "id": "sb_protector",
+      "starbound_id": "protector",
+      "name": "Protector's",
+      "color": "white-gold",
+      "deco": "wing",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.04,
+      "jump": 1.04,
+      "thrust": 1.1,
+      "mass": 1.16,
+      "theme_secondary": [
+        130,
+        122,
+        98
+      ],
+      "theme_accent": [
+        210,
+        214,
+        226
+      ],
+      "art": "body_sb_protector"
+    },
+    {
+      "id": "sb_reactor",
+      "starbound_id": "reactor",
+      "name": "Reactor",
+      "color": "green-glow",
+      "deco": "reactor",
+      "hull": [
+        5.0,
+        7.2
+      ],
+      "move": 1.02,
+      "jump": 1.0,
+      "thrust": 1.12,
+      "mass": 1.22,
+      "theme_secondary": [
+        48,
+        98,
+        64
+      ],
+      "theme_accent": [
+        251,
+        226,
+        243
+      ],
+      "art": "body_sb_reactor"
+    },
+    {
+      "id": "sb_shark",
+      "starbound_id": "shark",
+      "name": "Lilotron",
+      "color": "blue-white",
+      "deco": "fin",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.08,
+      "jump": 1.02,
+      "thrust": 1.04,
+      "mass": 1.14,
+      "theme_secondary": [
+        56,
+        86,
+        122
+      ],
+      "theme_accent": [
+        247,
+        232,
+        214
+      ],
+      "art": "body_sb_shark"
+    },
+    {
+      "id": "sb_skull",
+      "starbound_id": "skull",
+      "name": "Nightwinder",
+      "color": "bone-dark",
+      "deco": "horns",
+      "hull": [
+        5.0,
+        7.1
+      ],
+      "move": 1.04,
+      "jump": 1.0,
+      "thrust": 1.06,
+      "mass": 1.1,
+      "theme_secondary": [
+        96,
+        86,
+        66
+      ],
+      "theme_accent": [
+        227,
+        232,
+        242
+      ],
+      "art": "body_sb_skull"
+    }
+  ],
+  "arms": [
+    {
+      "id": "sb_beamdrill",
+      "starbound_id": "beamdrill",
+      "name": "Beam Drill",
+      "behavior": "BeamDrill",
+      "family": "beam",
+      "art": "arm_beam",
+      "icon": "icon_beam",
+      "range": 1.65,
+      "terrain": 0.55,
+      "entity": 0.65,
+      "cooldown": 1.35
+    },
+    {
+      "id": "sb_beamsniper",
+      "starbound_id": "beamsniper",
+      "name": "Beam Sniper",
+      "behavior": "BeamDrill",
+      "family": "beam",
+      "art": "arm_beam",
+      "icon": "icon_beam",
+      "range": 2.1,
+      "terrain": 0.35,
+      "entity": 1.15,
+      "cooldown": 1.6
+    },
+    {
+      "id": "sb_cannon",
+      "starbound_id": "cannon",
+      "name": "Cannon",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.0,
+      "terrain": 0.85,
+      "entity": 1.1,
+      "cooldown": 1.0
+    },
+    {
+      "id": "sb_chainsaw",
+      "starbound_id": "chainsaw",
+      "name": "Neo Chainsaw",
+      "behavior": "Melee",
+      "family": "drill",
+      "art": "arm_drill",
+      "icon": "icon_drill",
+      "range": 0.9,
+      "terrain": 1.2,
+      "entity": 1.3,
+      "cooldown": 0.85
+    },
+    {
+      "id": "sb_clustermine",
+      "starbound_id": "clustermine",
+      "name": "Cluster Mine",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.3,
+      "terrain": 0.5,
+      "entity": 0.8,
+      "cooldown": 1.8
+    },
+    {
+      "id": "sb_despawner",
+      "starbound_id": "despawner",
+      "name": "despawner",
+      "behavior": "None",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.0,
+      "terrain": 0.0,
+      "entity": 0.0,
+      "cooldown": 1.0
+    },
+    {
+      "id": "sb_drill",
+      "starbound_id": "drill",
+      "name": "Drill",
+      "behavior": "Drill",
+      "family": "drill",
+      "art": "arm_drill",
+      "icon": "icon_drill",
+      "range": 1.0,
+      "terrain": 1.0,
+      "entity": 1.0,
+      "cooldown": 1.0
+    },
+    {
+      "id": "sb_dualrifle",
+      "starbound_id": "dualrifle",
+      "name": "Dual Rifle",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.25,
+      "terrain": 0.7,
+      "entity": 1.05,
+      "cooldown": 0.9
+    },
+    {
+      "id": "sb_energyblade",
+      "starbound_id": "energyblade",
+      "name": "Energy Blade",
+      "behavior": "Melee",
+      "family": "drill",
+      "art": "arm_drill",
+      "icon": "icon_drill",
+      "range": 0.85,
+      "terrain": 0.8,
+      "entity": 1.55,
+      "cooldown": 0.8
+    },
+    {
+      "id": "sb_energyrifle",
+      "starbound_id": "energyrifle",
+      "name": "Energy Rifle",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.45,
+      "terrain": 0.65,
+      "entity": 1.1,
+      "cooldown": 1.0
+    },
+    {
+      "id": "sb_flakcannon",
+      "starbound_id": "flakcannon",
+      "name": "Flak Cannon",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.2,
+      "terrain": 0.6,
+      "entity": 1.25,
+      "cooldown": 1.3
+    },
+    {
+      "id": "sb_gatling",
+      "starbound_id": "gatling",
+      "name": "Gatling Gun",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.15,
+      "terrain": 0.65,
+      "entity": 1.15,
+      "cooldown": 0.65
+    },
+    {
+      "id": "sb_gravitymine",
+      "starbound_id": "gravitymine",
+      "name": "Gravity Mine",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.3,
+      "terrain": 0.5,
+      "entity": 0.8,
+      "cooldown": 1.8
+    },
+    {
+      "id": "sb_guidedmissiles",
+      "starbound_id": "guidedmissiles",
+      "name": "Guided Missile",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 2.0,
+      "terrain": 0.55,
+      "entity": 1.7,
+      "cooldown": 1.8
+    },
+    {
+      "id": "sb_heatrifle",
+      "starbound_id": "heatrifle",
+      "name": "Heatrifle",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.5,
+      "terrain": 0.8,
+      "entity": 1.25,
+      "cooldown": 1.3
+    },
+    {
+      "id": "sb_homingmissile",
+      "starbound_id": "homingmissile",
+      "name": "Homing Missile",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 2.1,
+      "terrain": 0.45,
+      "entity": 1.5,
+      "cooldown": 2.0
+    },
+    {
+      "id": "sb_missilerack",
+      "starbound_id": "missilerack",
+      "name": "Missile Rack",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.9,
+      "terrain": 0.5,
+      "entity": 1.6,
+      "cooldown": 2.1
+    },
+    {
+      "id": "sb_multidronelauncher",
+      "starbound_id": "multidronelauncher",
+      "name": "multidronelauncher",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.6,
+      "terrain": 0.4,
+      "entity": 0.9,
+      "cooldown": 1.7
+    },
+    {
+      "id": "sb_neolaser",
+      "starbound_id": "neolaser",
+      "name": "Neo Laser",
+      "behavior": "BeamDrill",
+      "family": "beam",
+      "art": "arm_beam",
+      "icon": "icon_beam",
+      "range": 1.85,
+      "terrain": 0.5,
+      "entity": 1.0,
+      "cooldown": 1.2
+    },
+    {
+      "id": "sb_plasmadronelauncher",
+      "starbound_id": "plasmadronelauncher",
+      "name": "plasmadronelauncher",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.6,
+      "terrain": 0.4,
+      "entity": 1.0,
+      "cooldown": 1.7
+    },
+    {
+      "id": "sb_shielddronelauncher",
+      "starbound_id": "shielddronelauncher",
+      "name": "shielddronelauncher",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.55,
+      "terrain": 0.4,
+      "entity": 0.7,
+      "cooldown": 1.8
+    },
+    {
+      "id": "sb_soluskatana",
+      "starbound_id": "soluskatana",
+      "name": "Solus Katana",
+      "behavior": "Melee",
+      "family": "drill",
+      "art": "arm_drill",
+      "icon": "icon_drill",
+      "range": 0.95,
+      "terrain": 0.95,
+      "entity": 1.8,
+      "cooldown": 0.85
+    },
+    {
+      "id": "sb_spikefist",
+      "starbound_id": "spikefist",
+      "name": "Spikefist",
+      "behavior": "Melee",
+      "family": "drill",
+      "art": "arm_drill",
+      "icon": "icon_drill",
+      "range": 0.85,
+      "terrain": 1.1,
+      "entity": 1.4,
+      "cooldown": 0.8
+    },
+    {
+      "id": "sb_splitshot",
+      "starbound_id": "splitshot",
+      "name": "Split Shot",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.25,
+      "terrain": 0.55,
+      "entity": 1.0,
+      "cooldown": 1.15
+    },
+    {
+      "id": "sb_teslastream",
+      "starbound_id": "teslastream",
+      "name": "Tesla Stream",
+      "behavior": "BeamDrill",
+      "family": "beam",
+      "art": "arm_beam",
+      "icon": "icon_beam",
+      "range": 1.9,
+      "terrain": 0.45,
+      "entity": 1.1,
+      "cooldown": 1.4
+    },
+    {
+      "id": "sb_tommygun",
+      "starbound_id": "tommygun",
+      "name": "Tommy Gun",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.35,
+      "terrain": 0.6,
+      "entity": 0.95,
+      "cooldown": 0.65
+    },
+    {
+      "id": "sb_wobbleshot",
+      "starbound_id": "wobbleshot",
+      "name": "Wobbleshot",
+      "behavior": "Cannon",
+      "family": "gun",
+      "art": "arm_cannon",
+      "icon": "icon_cannon",
+      "range": 1.4,
+      "terrain": 0.55,
+      "entity": 1.05,
+      "cooldown": 1.1
+    }
+  ],
+  "legs": [
+    {
+      "id": "sb_arc",
+      "starbound_id": "arc",
+      "name": "Arc",
+      "family": "arc",
+      "art": "leg_arc",
+      "move": 1.28,
+      "jump": 0.92
+    },
+    {
+      "id": "sb_hermes",
+      "starbound_id": "hermes",
+      "name": "Hermes",
+      "family": "strider",
+      "art": "leg_strider",
+      "move": 1.22,
+      "jump": 1.02
+    },
+    {
+      "id": "sb_hopper",
+      "starbound_id": "hopper",
+      "name": "Hopper",
+      "family": "hopper",
+      "art": "leg_hopper",
+      "move": 0.82,
+      "jump": 1.28
+    },
+    {
+      "id": "sb_intrepid",
+      "starbound_id": "intrepid",
+      "name": "Intrepid",
+      "family": "sleek",
+      "art": "leg_sleek",
+      "move": 1.12,
+      "jump": 1.12
+    },
+    {
+      "id": "sb_ronin",
+      "starbound_id": "ronin",
+      "name": "Ronin",
+      "family": "arc",
+      "art": "leg_arc",
+      "move": 1.08,
+      "jump": 1.04
+    },
+    {
+      "id": "sb_simple",
+      "starbound_id": "simple",
+      "name": "Basic",
+      "family": "strider",
+      "art": "leg_strider",
+      "move": 1.0,
+      "jump": 1.0
+    },
+    {
+      "id": "sb_sleek",
+      "starbound_id": "sleek",
+      "name": "Sleek",
+      "family": "sleek",
+      "art": "leg_sleek",
+      "move": 1.16,
+      "jump": 1.0
+    },
+    {
+      "id": "sb_twinjet",
+      "starbound_id": "twinjet",
+      "name": "Twinjet",
+      "family": "sleek",
+      "art": "leg_sleek",
+      "move": 1.18,
+      "jump": 1.08
+    }
+  ],
+  "boosters": [
+    {
+      "id": "sb_astro",
+      "starbound_id": "astro",
+      "name": "Astro",
+      "family": "vector",
+      "art": "booster_vector",
+      "thrust": 1.05,
+      "rise": 1.08,
+      "fall": 0.96
+    },
+    {
+      "id": "sb_gallant",
+      "starbound_id": "gallant",
+      "name": "Gallant",
+      "family": "vector",
+      "art": "booster_vector",
+      "thrust": 1.16,
+      "rise": 1.12,
+      "fall": 0.94
+    },
+    {
+      "id": "sb_hammer",
+      "starbound_id": "hammer",
+      "name": "Hammer",
+      "family": "twinjet",
+      "art": "booster_twinjet",
+      "thrust": 1.24,
+      "rise": 1.0,
+      "fall": 1.16
+    },
+    {
+      "id": "sb_simple",
+      "starbound_id": "simple",
+      "name": "Basic",
+      "family": "vector",
+      "art": "booster_vector",
+      "thrust": 1.0,
+      "rise": 1.0,
+      "fall": 1.0
+    },
+    {
+      "id": "sb_sleek",
+      "starbound_id": "sleek",
+      "name": "Sleek",
+      "family": "twinjet",
+      "art": "booster_twinjet",
+      "thrust": 1.1,
+      "rise": 1.06,
+      "fall": 1.02
+    },
+    {
+      "id": "sb_stalwart",
+      "starbound_id": "stalwart",
+      "name": "Stalwart",
+      "family": "vector",
+      "art": "booster_vector",
+      "thrust": 1.08,
+      "rise": 1.1,
+      "fall": 0.92
+    },
+    {
+      "id": "sb_zed",
+      "starbound_id": "zed",
+      "name": "Zed",
+      "family": "twinjet",
+      "art": "booster_twinjet",
+      "thrust": 1.28,
+      "rise": 1.18,
+      "fall": 0.94
+    },
+    {
+      "id": "sb_zero",
+      "starbound_id": "zero",
+      "name": "Zero",
+      "family": "vector",
+      "art": "booster_vector",
+      "thrust": 1.2,
+      "rise": 1.2,
+      "fall": 0.88
+    }
+  ],
+  "horns": [
+    {
+      "id": "sb_airhorn",
+      "starbound_id": "airhorn",
+      "name": "Airhorn",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_bikebell",
+      "starbound_id": "bikebell",
+      "name": "Bike Bell",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_bull",
+      "starbound_id": "bull",
+      "name": "Bull",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_charge",
+      "starbound_id": "charge",
+      "name": "Charge",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_clownhorn",
+      "starbound_id": "clownhorn",
+      "name": "Clown",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_foghorn",
+      "starbound_id": "foghorn",
+      "name": "Foghorn",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_lacucha",
+      "starbound_id": "lacucha",
+      "name": "Melody",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_robotvoice",
+      "starbound_id": "robotvoice",
+      "name": "Robot Voice",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_rubberduck",
+      "starbound_id": "rubberduck",
+      "name": "Rubber Duck",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_sportshorn",
+      "starbound_id": "sportshorn",
+      "name": "Sports",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_steamwhistle",
+      "starbound_id": "steamwhistle",
+      "name": "Steam Whistle",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_toy",
+      "starbound_id": "toy",
+      "name": "Toy",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_train",
+      "starbound_id": "train",
+      "name": "Train Whistle",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    },
+    {
+      "id": "sb_truck",
+      "starbound_id": "truck",
+      "name": "Truck",
+      "art": "horn_siren",
+      "icon": "icon_siren"
+    }
+  ]
+}

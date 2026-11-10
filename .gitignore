@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+.local/
+artifacts/
+runs/
+profiles/*.local.json
+**/bin/
+**/obj/
+
+# Local history, generated reference previews and third-party/game data
+versions/
+tools/art/preview/
+*.dll
+*.exe
+*.pdb
+*.zip
+*.pak
+*.sv
+*.log
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vs/
+.vscode/
+*.user

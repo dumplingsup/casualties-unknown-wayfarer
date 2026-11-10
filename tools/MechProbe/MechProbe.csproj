@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net48</TargetFramework><LangVersion>latest</LangVersion><AssemblyName>MechProbe</AssemblyName><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile><GameDir>D:\SteamLibrary\steamapps\common\Casualties Unknown</GameDir></PropertyGroup>
+ <ItemGroup>
+  <ProjectReference Include="../../src/WayfarerMech/WayfarerMech.csproj" />
+  <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+  <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  <Reference Include="Assembly-CSharp"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+  <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+  <Reference Include="UnityEngine"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/UnityEngine.dll</HintPath><Private>false</Private></Reference>
+  <Reference Include="UnityEngine.Physics2DModule"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/UnityEngine.Physics2DModule.dll</HintPath><Private>false</Private></Reference>
+  <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+  <Reference Include="UnityEngine.ScreenCaptureModule"><HintPath>$(GameDir)/CasualtiesUnknown_Data/Managed/UnityEngine.ScreenCaptureModule.dll</HintPath><Private>false</Private></Reference>
+ </ItemGroup>
+</Project>
