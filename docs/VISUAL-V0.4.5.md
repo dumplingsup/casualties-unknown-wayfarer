@@ -57,3 +57,12 @@ Probe 新增 CU_PROBE_KEEP_ART_LOADOUT=1，通过真实装配面板 Apply 方法
 DLL SHA-256：`dcfe3149f9541c7c6df5dc22c5640fe4dfb270c8a7f296bd85c62baa44ef562c`。
 ZIP SHA-256：`fdf4795a775998b5ef91633ecd8db5d26a03b762f500b281e34fbf73df894200`。
 锁和 stage：`artifacts/wayfarer-v0.4.5.lock.json`、`artifacts/wayfarer-v0.4.5`；运行时复制 DLL 与锁中哈希一致。旧 v0.4.4 包保留用于回退。
+
+## 远端推送后真实窗口输入复测（2026-11-10）
+
+开发提交 adfe870 已推送 origin/codex/wayfarer-compact-avian，未合并 main。
+`runs/v045-remote-play`，隔离游戏 PID 4484。fakeinput=False，先由 fixture 读档、布置平地和登机；之后由 computer-use/Windows SendInput 操作真实窗口，不使用 ProbeInput。
+
+这轮桌面捕获正确显示 CasualtiesUnknown，先前捕获错位阻塞未再出现。实际输入 D 后观察到移动数据；F 下机得到 PILOT_EXIT；P 打开装配；鼠标点击 Apply 得到 ASSEMBLY_APPLY_BUTTON 和 ASSEMBLY_APPLIED；F 再次登机；右键机炮 shots 从 0 到 1。最后 Esc，窗口显示暂停菜单，观测 paused=true、piloting=true。这是限定路径的真实窗口输入通过，不是全部玩法或人工手持键鼠验收；本轮未单独验证持续喷气/长时间钻掘。
+
+正式数据目录的 3 个文件与哈希在此次检查前后不变，记录 `.local/v045-remote-play-before.json` / `v045-remote-play-after.json`。保留该测试实例暂停供用户继续操作；本轮未宣称正常退出或又一次保存读档。
