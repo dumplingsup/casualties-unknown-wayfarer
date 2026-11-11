@@ -490,6 +490,8 @@ namespace WayfarerMech
             }
         }
 
+        public float DropFold { get; set; }
+
         private void AnimateLeg(Leg leg, float phaseOffset)
         {
             if (leg?.Thigh == null || leg.Shin == null || leg.Foot == null || leg.Part == null) return;
@@ -557,6 +559,8 @@ namespace WayfarerMech
                 footAngle = Mathf.Clamp(footAngle, -25f, 25f) * leg.GroundBlend;
                 leg.ContactSolved = pose.Reachable && lift < 0.2f && leg.GroundBlend > 0.99f;
             }
+            thigh = Mathf.LerpAngle(thigh, -52f, DropFold);
+            shin = Mathf.LerpAngle(shin, 106f, DropFold);
             leg.Thigh.localRotation = Quaternion.Euler(0, 0, thigh);
             leg.Shin.localRotation = Quaternion.Euler(0, 0, shin);
             float toe = Mathf.Sin(p * Mathf.PI * 2f) * 3f * walkBlend * (1f - leg.GroundBlend);
@@ -586,7 +590,7 @@ namespace WayfarerMech
                 {
                     a.Pivot.localPosition = a.BasePos;
                 }
-                if (a.Pivot) a.Pivot.localRotation = Quaternion.Euler(0, 0, a.Aim + jitter);
+                if (a.Pivot) a.Pivot.localRotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(a.Aim + jitter, -65f, DropFold));
                 if (a.BitRenderer)
                 {
                     if (a.Held)

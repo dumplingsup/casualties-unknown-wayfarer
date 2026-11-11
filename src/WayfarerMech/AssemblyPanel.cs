@@ -56,9 +56,9 @@ namespace WayfarerMech
 
         private void TryOpen()
         {
-            if (!Plugin.Mech) { Plugin.Tell("先按 G 召唤机甲，停稳后再装配 / Summon the mech first"); return; }
+            if (!Plugin.Mech) { Plugin.Tell("附近没有可装配的机甲"); return; }
             if (Plugin.Mech.Pilot) { Plugin.Tell("驾驶中不能换装 / Exit the cockpit first"); return; }
-            if (!Plugin.Mech.Grounded) { Plugin.Tell("机甲停稳后才能装配 / Land the mech first"); return; }
+            if (Plugin.Mech.Deploying || !Plugin.Mech.Grounded) { Plugin.Tell("机甲停稳后才能装配 / Land the mech first"); return; }
             original = Plugin.Mech.Loadout != null ? Plugin.Mech.Loadout.Clone() : MechLoadout.Default();
             draft = original.Clone();
             selectedSlot = MechSlot.Body;
@@ -160,9 +160,6 @@ namespace WayfarerMech
                 Close(true);
                 return;
             }
-            GUI.Label(new Rect(panel.x + 14, panel.y + 30, panel.width - 28, 20),
-                "Enter 应用 / P/Esc 取消 · 应用前检查新机体净空 · 驾驶中不可换装");
-
             float leftX = panel.x + 14;
             float leftY = panel.y + 82;
             for (int i = 0; i < 6; i++)

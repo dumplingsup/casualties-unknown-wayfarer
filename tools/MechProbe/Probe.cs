@@ -9,7 +9,7 @@ using UnityEngine;
 using WayfarerMech;
 using HarmonyLib;
 
-// Observation only: no artificial passes, key injection or arbitrary code execution.
+// Test-only observation, fixtures, and explicitly enabled synthetic-input scenarios.
 // Samples every frame in memory and appends an aggregated record every 0.5s.
 [BepInPlugin("local.cu.mechprobe", "Mech observation probe", "0.2.0")]
 [BepInDependency(Plugin.Guid)]
@@ -115,6 +115,68 @@ public class Probe : BaseUnityPlugin
             ScreenCapture.CaptureScreenshot(path, 1);
         }
         catch (Exception ex) { Logger.LogWarning("PROBE_SHOT_FAILED " + ex.Message); }
+    }
+
+    private object DriveSnapshot(MechController m)
+    {
+        var points = new ContactPoint2D[24];
+        int count = m.Chassis.GetContacts(points);
+        return new {
+            left = Input.GetKey(KeyBinds.GetBind("left")), right = Input.GetKey(KeyBinds.GetBind("right")),
+            drive = AccessTools.Field(typeof(MechController), "drive").GetValue(m),
+            motor = AccessTools.Field(typeof(MechController), "motorVelocity").GetValue(m),
+            sleeping = m.Chassis.IsSleeping(), active = Plugin.InputReady(),
+            contacts = points.Take(count).Select(p => new { x = p.point.x, y = p.point.y,
+                nx = p.normal.x, ny = p.normal.y, name = p.collider ? p.collider.name : "" }).ToArray()
+        };
+    }
+
+    private System.Collections.IEnumerator DropAudit(MechController m, Body player)
+    {
+        float start = Time.time;
+        m.Enter(player);
+        Logger.LogInfo("PROBE_DROP_EARLY_BOARD rejected=" + !m.Pilot);
+        for (int i = 0; m && i < 55; i++)
+        {
+            yield return new WaitForEndOfFrame();
+            Capture("drop-" + i.ToString("D2") + ".png");
+            File.AppendAllText(Path.Combine(output, "drop.jsonl"), JsonConvert.SerializeObject(new {
+                t = Time.time - start, x = m.transform.position.x, y = m.transform.position.y,
+                visible = m.Visual.VisualRoot.gameObject.activeSelf, fold = m.Visual.DropFold, deploying = m.Deploying,
+                vy = m.VelocityY, grounded = m.Grounded }) + Environment.NewLine);
+            if (!m.Deploying) yield break;
+            yield return new WaitForSeconds(0.09f);
+        }
+    }
+
+    private System.Collections.IEnumerator DriveAudit(MechController mech)
+    {
+        // Exercise long holds, a full stop (including physics sleep), and restarts.
+        int[] directions = { 1, 0, -1, 0, 1, 0, -1, 0 };
+        if (Environment.GetEnvironmentVariable("CU_PROBE_DRIVE_WALL") == "1")
+        {
+            BuildMaterialWall(6, mech);
+            yield return new WaitForSeconds(0.5f);
+            directions = new[] { 1, 0, -1, 0 };
+        }
+        for (int stage = 0; stage < directions.Length; stage++)
+        {
+            int direction = directions[stage];
+            ProbeInput.SetKey(KeyCode.D, direction > 0);
+            ProbeInput.SetKey(KeyCode.A, direction < 0);
+            float until = Time.time + (direction == 0 ? 3f : 4f);
+            while (Time.time < until && mech)
+            {
+                yield return new WaitForSeconds(0.1f);
+                File.AppendAllText(Path.Combine(output, "drive.jsonl"), JsonConvert.SerializeObject(new {
+                    stage, direction, time = Time.time, x = mech.transform.position.x, y = mech.transform.position.y,
+                    vx = mech.VelocityX, vy = mech.VelocityY, diagnostic = DriveSnapshot(mech) }) + Environment.NewLine);
+            }
+            Capture("drive-stage-" + stage + ".png");
+        }
+        ProbeInput.ClearAll();
+        Logger.LogInfo("PROBE_DRIVE_DONE");
+        SaveSystem.SaveGame();
     }
 
     private System.Collections.IEnumerator MotionAudit(MechController mech, Body body)
@@ -237,6 +299,8 @@ public class Probe : BaseUnityPlugin
             if (m == null)
             {
                 Plugin.ToggleSummon();
+                if (Environment.GetEnvironmentVariable("CU_PROBE_DROP") == "1" && Plugin.Mech)
+                    StartCoroutine(DropAudit(Plugin.Mech, b));
                 autoNext = Time.unscaledTime + 1.0f;
                 autoStage = 2;
                 Logger.LogInfo("PROBE_AUTO_SUMMON_REQUEST");
@@ -248,6 +312,7 @@ public class Probe : BaseUnityPlugin
         {
             m = Plugin.Mech;
             if (m == null) { Logger.LogInfo("PROBE_AUTO_SUMMON_FAILED"); autoStage = 99; return; }
+            if (m.Deploying) return;
             Vector2 pos = (Vector2)m.transform.position + Vector2.up * 4.8f;
             TeleportPlayer(b, pos);
             autoNext = Time.unscaledTime + 0.5f;
@@ -282,7 +347,12 @@ public class Probe : BaseUnityPlugin
                     Logger.LogInfo("PROBE_MANUAL_EXIT_READY high=" + high);
                 }
             }
-            if (fakeInput && Environment.GetEnvironmentVariable("CU_PROBE_MOTION") == "1")
+            if (fakeInput && Environment.GetEnvironmentVariable("CU_PROBE_DRIVE") == "1")
+            {
+                StartCoroutine(DriveAudit(m));
+                scriptStage = 999;
+            }
+            else if (fakeInput && Environment.GetEnvironmentVariable("CU_PROBE_MOTION") == "1")
             {
                 StartCoroutine(MotionAudit(m, b));
                 scriptStage = 999;
@@ -1257,7 +1327,8 @@ public class Probe : BaseUnityPlugin
             int floorY = origin.y + 30;
             if (floorY >= (int)w.height - 30) floorY = origin.y - 30;
             if (cx < 26 || cx >= (int)w.width - 26 || floorY < 26 || floorY >= (int)w.height - 30) continue;
-            int half = 19, height = 24, cleared = 0, floor = 0;
+            int half = Environment.GetEnvironmentVariable("CU_PROBE_DRIVE") == "1" ? 40 : 19;
+            int height = 24, cleared = 0, floor = 0;
             for (int dx = -half; dx <= half; dx++)
             {
                 int x = cx + dx;
@@ -1485,6 +1556,7 @@ public class Probe : BaseUnityPlugin
             }
             if (m)
             {
+                record["driveDiagnostic"] = DriveSnapshot(m);
                 record["mech"] = new
                 {
                     x = Round(m.transform.position.x), y = Round(m.transform.position.y),

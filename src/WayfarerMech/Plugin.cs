@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace WayfarerMech
 {
-    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.6")]
+    [BepInPlugin(Guid, "Wayfarer Mech", "0.4.8")]
     [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
@@ -41,7 +41,7 @@ namespace WayfarerMech
             ItemRegistry.Register(BeaconId, new CustomItemInfo
             {
                 fullName = "Wayfarer mech beacon",
-                description = "Reusable mech uplink. G: summon/recall. F: enter/exit. P: assembly. Hold jump: jet. LMB/RMB: two arms. H: horn.",
+                description = "Use beacon or G to request/cancel a drop or recall an empty mech. After touchdown and unfolding, F boards or exits, even in midair. A/D move, jump to hop, hold jump to boost. LMB/RMB operate the arms, H sounds the horn. P opens assembly beside a parked mech.",
                 category = "tool", weight = 0.1f, value = 0, usable = true,
                 usableWithLMB = false, destroyAtZeroCondition = false, decayMinutes = 0,
                 SpawnFrequency = 0, rec = new Recognition(0),
@@ -59,7 +59,7 @@ namespace WayfarerMech
             gameObject.AddComponent<AssemblyPanel>();
             patches = new Harmony(Guid);
             patches.PatchAll(typeof(Plugin).Assembly);
-            LogInfo("Wayfarer 0.4.6 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
+            LogInfo("Wayfarer 0.4.8 registered. Full modular catalogue; open-cockpit prototype; invulnerable chassis.");
         }
 
         public static bool Ready => PlayerCamera.main && PlayerCamera.main.body && WorldGeneration.world &&
@@ -86,11 +86,11 @@ namespace WayfarerMech
             if (AssemblyPanel.IsOpen) return;
             if (!InputReady()) return;
             if (Input.GetKeyDown(SummonKey.Value) && !Piloting) ToggleSummon();
-            if (Input.GetKeyDown(BoardKey.Value) && Mech)
+            if (Input.GetKeyDown(BoardKey.Value) && Mech && !Mech.Deploying)
             {
                 if (Piloting) Mech.Exit(false);
                 else if (Vector2.Distance(body.transform.position, Mech.transform.position) <= 7f) Mech.Enter(body);
-                else Tell("靠近机甲后按 F 进入 / Move closer to board");
+                else Tell("驾驶舱距离过远");
             }
         }
 
@@ -104,7 +104,7 @@ namespace WayfarerMech
                 {
                     var slot = body.FirstEmptySlot();
                     if (slot.HasValue) body.PickUpItem(item, slot.Value, true);
-                    Tell(slot.HasValue ? "已获得机甲召唤器：G 召唤，F 驾驶，P 装配" : "背包已满：召唤器已放在脚边");
+                    if (!slot.HasValue) Tell("背包已满，召唤器已放在脚边");
                     LogInfo("BEACON_GRANTED body=" + body.GetInstanceID());
                 }
                 else LogError("Beacon spawn failed");
@@ -118,7 +118,7 @@ namespace WayfarerMech
             if (!InputReady() || Piloting || AssemblyPanel.IsOpen) return;
             var body = PlayerCamera.main.body;
             if (!HasBeacon(body)) { Tell("请将机甲召唤器放在背包中 / Beacon required"); return; }
-            if (Mech) { UnityEngine.Object.Destroy(Mech.gameObject); Mech = null; Tell("机甲已回收 / Mech recalled"); return; }
+            if (Mech) { Mech.Recall(); return; }
             var loadout = MechLoadoutStore.Get(body);
             loadout.Normalize(out _);
             var stats = MechCatalog.Combine(loadout);
@@ -127,32 +127,11 @@ namespace WayfarerMech
             var root = new GameObject("Wayfarer Mech");
             root.transform.position = pos;
             Mech = root.AddComponent<MechController>();
-            Tell("机甲已部署，靠近后按 F 进入 / F to board");
+            Mech.BeginDrop();
             LogInfo("MECH_SUMMONED " + pos + " loadout=" + loadout.Summary);
         }
 
         public static void Tell(string message) { if (PlayerCamera.main) PlayerCamera.main.DoAlert(message); }
-
-        public void DrawHUD()
-        {
-            if (!Ready || !Mech || AssemblyPanel.IsOpen) return;
-            string jump = KeyBinds.GetBindName("jump");
-            string left = KeyBinds.GetBindName("left"), right = KeyBinds.GetBindName("right");
-            float width = Mathf.Min(310f, Screen.width - 24f);
-            var area = new Rect(Screen.width - width - 14, 86, width, 94);
-            GUI.DrawTexture(area, Texture2D.whiteTexture, ScaleMode.StretchToFill, false,
-                0f, new Color(0.045f, 0.065f, 0.075f, 0.9f), 0f, 0f);
-            var title = new GUIStyle(GUI.skin.label) { fontSize = 13, alignment = TextAnchor.UpperLeft };
-            title.normal.textColor = new Color(0.83f, 0.83f, 0.68f);
-            var detail = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true, alignment = TextAnchor.UpperLeft };
-            string state = Mech.ThrustActive ? "喷气" : Mech.CeilingBlocked ? "顶碰" : "无损机体";
-            GUI.Label(new Rect(area.x + 12, area.y + 8, width - 24, 22),
-                "WAYFARER  ·  " + (Piloting ? state : "待机"), title);
-            string controls = Piloting
-                ? left + "/" + right + " 移动   长按 " + jump + " 飞行\n左/右键：双臂   H 喇叭   F 下机"
-                : "F 进入驾驶舱   G 回收\nP 装配 · 换装与配色";
-            GUI.Label(new Rect(area.x + 12, area.y + 34, width - 24, 54), controls, detail);
-        }
 
         void OnDestroy()
         {
@@ -163,18 +142,12 @@ namespace WayfarerMech
         }
     }
 
-    public sealed class MechDriver : MonoBehaviour
-    {
-        void OnGUI() { if (!ReferenceEquals(Plugin.Instance, null)) Plugin.Instance.DrawHUD(); }
-    }
-
     [HarmonyPatch(typeof(PlayerCamera), "Update")]
     static class PlayerRuntime
     {
         static void Postfix(PlayerCamera __instance)
         {
             if (ReferenceEquals(Plugin.Instance, null)) return;
-            if (!__instance.GetComponent<MechDriver>()) __instance.gameObject.AddComponent<MechDriver>();
             Plugin.Instance.Tick();
         }
     }

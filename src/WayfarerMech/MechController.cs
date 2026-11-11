@@ -113,7 +113,7 @@ namespace WayfarerMech
                 Vector2 above = origin + new Vector2(dx, dy + 8f);
                 var hit = Physics2D.Raycast(above, Vector2.down, 55f, GroundMask);
                 if (!hit) continue;
-                var landing = hit.point + Vector2.up * (size.y * 0.5f + 0.1f);
+                var landing = hit.point + Vector2.up * (size.y * 0.5f + 0.25f);
                 if (Mathf.Abs(landing.y - origin.y) > 28f) continue;
                 if (Physics2D.OverlapBox(landing, size + Vector2.one * 0.3f, 0, GroundMask)) continue;
                 if (Physics2D.OverlapBox(landing, new Vector2(size.x - 0.8f, size.y - 0.8f), 0, BodyMask)) continue;
@@ -154,7 +154,12 @@ namespace WayfarerMech
             Chassis.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             Chassis.interpolation = RigidbodyInterpolation2D.Interpolate;
             hull = gameObject.AddComponent<BoxCollider2D>();
-            hull.size = HullSize;
+            // Terrain polygons have tiny ledges at cell seams. A sharp box corner
+            // catches their side normals even on an apparently flat floor.
+            // Round within the existing outer envelope; do not enlarge the hull.
+            const float cornerRadius = 0.08f;
+            hull.size = HullSize - Vector2.one * (2f * cornerRadius);
+            hull.edgeRadius = cornerRadius;
             material = new PhysicsMaterial2D("Wayfarer hull") { friction = 0.15f, bounciness = 0f };
             hull.sharedMaterial = material;
             IgnorePilotCollisions();
@@ -209,7 +214,7 @@ namespace WayfarerMech
             Loadout = loadout.Clone();
             Stats = stats;
             HullSize = newSize;
-            if (hull) hull.size = HullSize;
+            if (hull) hull.size = HullSize - Vector2.one * (2f * hull.edgeRadius);
             if (Chassis) Chassis.mass = Mathf.Max(30f, Stats.Mass);
             Visual = gameObject.AddComponent<MechVisual>();
             Visual.Build(transform, Loadout);
@@ -225,7 +230,7 @@ namespace WayfarerMech
 
         public void Enter(Body body)
         {
-            if (Pilot || !body || !body.conscious || !Plugin.InputReady()) return;
+            if (Deploying || Pilot || !body || !body.conscious || !Plugin.InputReady()) return;
             Pilot = body;
             originalForceNoMovement = body.forceNoMovement;
             body.forceNoMovement = true;
@@ -246,7 +251,6 @@ namespace WayfarerMech
             nextSafeCheck = 0f;
             firstHitTime.Clear();
             for (int i = 0; i < 2; i++) { nextArmAction[i] = 0f; armHeld[i] = false; armContact[i] = false; beamActive[i] = false; }
-            Plugin.Tell("驾驶已接管：长按跳跃喷气 / 左键左臂 / 右键右臂 / F 下机 / H 喇叭");
             Debug.Log("[Wayfarer] PILOT_ENTER size=" + pilotSize + " proxy=" + (PilotProxy != null));
         }
 
@@ -421,6 +425,7 @@ namespace WayfarerMech
                 Destroy(gameObject);
                 return;
             }
+            if (Deploying) return;
             if (!Pilot)
             {
                 Grounded = CheckGrounded();
@@ -613,8 +618,104 @@ namespace WayfarerMech
             }
         }
 
+        private enum DropPhase { Ready, Waiting, Descending, Unfolding, Recalling }
+        private DropPhase dropPhase;
+        private float dropTimer;
+        public bool Deploying => dropPhase != DropPhase.Ready;
+
+        public void BeginDrop()
+        {
+            dropPhase = DropPhase.Waiting;
+            dropTimer = 1.2f;
+            Chassis.interpolation = RigidbodyInterpolation2D.None;
+            Chassis.simulated = false;
+            Visual.VisualRoot.gameObject.SetActive(false);
+            Plugin.LogInfo("DROP_REQUEST");
+        }
+
+        public void Recall()
+        {
+            if (Pilot || dropPhase == DropPhase.Recalling) return;
+            if (Deploying) { Destroy(gameObject); return; }
+            dropPhase = DropPhase.Recalling;
+            dropTimer = 0.3f;
+            Plugin.LogInfo("RECALL_FOLD");
+        }
+
+        private void AdvanceDrop()
+        {
+            float dt = Time.fixedDeltaTime;
+            dropTimer -= dt;
+            if (dropPhase == DropPhase.Recalling)
+            {
+                Visual.DropFold = 1f - Mathf.Clamp01(dropTimer / 0.3f);
+                if (dropTimer <= 0f) Destroy(gameObject);
+                return;
+            }
+            if (dropPhase == DropPhase.Waiting)
+            {
+                if (dropTimer > 0f) return;
+                Vector2 landing = transform.position;
+                if (Physics2D.OverlapBox(landing, HullSize, 0f, GroundMask))
+                {
+                    Plugin.Tell("空投位置被挡住了");
+                    Destroy(gameObject);
+                    return;
+                }
+                const float height = 17f;
+                var roof = Physics2D.BoxCast(landing, HullSize, 0f, Vector2.up, height, GroundMask | BodyMask);
+                float lift = roof ? Mathf.Clamp(roof.distance - 0.15f, 0f, height) : height;
+                Vector2 entry = landing + Vector2.up * lift;
+                transform.position = entry;
+                Visual.DropFold = 1f;
+                Visual.VisualRoot.gameObject.SetActive(true);
+                Chassis.simulated = true;
+                Chassis.position = entry;
+                Chassis.velocity = Vector2.down * 20f;
+                dropPhase = DropPhase.Descending;
+                dropTimer = 0f;
+                Plugin.LogInfo("DROP_DESCENT height=" + lift);
+            }
+            else if (dropPhase == DropPhase.Descending)
+            {
+                // Only actual upward terrain contact releases the landing sequence.
+                int count = hull.GetContacts(contacts);
+                for (int i = 0; i < count; i++)
+                {
+                    var c = contacts[i];
+                    if (c.normal.y < 0.45f || !c.collider || (GroundMask & (1 << c.collider.gameObject.layer)) == 0) continue;
+                    Grounded = true;
+                    Visual.NotifyLanded(1f);
+                    dropPhase = DropPhase.Unfolding;
+                    dropTimer = 0.55f;
+                    Plugin.LogInfo("DROP_TOUCHDOWN");
+                    return;
+                }
+                var floor = Physics2D.BoxCast(Chassis.position, HullSize * 0.97f, 0f, Vector2.down, 12f, GroundMask);
+                bool braking = floor && floor.distance < 10f;
+                float fall = braking ? Mathf.Lerp(4f, 20f, floor.distance / 10f) : 20f;
+                Chassis.velocity = new Vector2(0f, -fall);
+                Visual.SetMotion(0f, -fall, false, braking);
+                if (audio) audio.SetThrust(braking, 0.6f);
+                if (dropTimer < -12f) { Plugin.Tell("空投未能着陆"); Destroy(gameObject); }
+            }
+            else
+            {
+                if (audio) audio.SetThrust(false);
+                Visual.SetMotion(0f, 0f, true, false);
+                Visual.DropFold = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(dropTimer / 0.55f));
+                if (dropTimer <= 0f)
+                {
+                    Chassis.interpolation = RigidbodyInterpolation2D.Interpolate;
+                    dropPhase = DropPhase.Ready;
+                    Plugin.LogInfo("DROP_READY");
+                }
+            }
+        }
+
         private void FixedUpdate()
         {
+            if (Deploying) { AdvanceDrop(); return; }
             if (!Pilot) return;
             bool active = Plugin.InputReady();
             Grounded = CheckGrounded();
