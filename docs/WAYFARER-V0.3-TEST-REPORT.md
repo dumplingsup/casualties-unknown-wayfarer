@@ -12,7 +12,7 @@
   生命周期；多人/其他 Mod 组合。详见 §8。
 - **包边界**：未上传 Steam Workshop，也未把 Starbound 原始素材或由其派生的预览图放进
   发布包。发布美术是脚本生成的原创像素图；Starbound 只作轮廓/配色参考。
-- **正式存档未被改写**：`C:\Users\42173\AppData\LocalLow\Orsoniks\CasualtiesUnknown\save.sv`
+- **正式存档未被改写**：`C:\Users\<user>\AppData\LocalLow\Orsoniks\CasualtiesUnknown\save.sv`
   全程保持 SHA-256 `AAD02CEFD5C55DC68345FAB7608E39A2DFA6A08B233453910B9A19A81A501FAB`
   （最后核对 2026-11-10）。正式游戏安装目录未改动。
 

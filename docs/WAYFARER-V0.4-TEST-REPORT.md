@@ -107,7 +107,7 @@ Starbound modular mech 部件目录**（本机可取得的全部 29 个机体、
 ## 6. 发布边界与正式环境
 
 - 正式游戏目录未修改；正式
-  `C:\Users\42173\AppData\LocalLow\Orsoniks\CasualtiesUnknown\save.sv` 保持
+  `C:\Users\<user>\AppData\LocalLow\Orsoniks\CasualtiesUnknown\save.sv` 保持
   `AAD02CEFD5C55DC68345FAB7608E39A2DFA6A08B233453910B9A19A81A501FAB`。
 - 测试游戏/用户数据均在 `.local/cu-test`；测试进程已关闭。
 - 候选包只含 `BepInEx/plugins/WayfarerMech/WayfarerMech.dll` 与 README；完整 stage 含
