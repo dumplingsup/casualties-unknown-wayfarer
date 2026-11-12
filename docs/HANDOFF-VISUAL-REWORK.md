@@ -83,7 +83,7 @@ v0.4.4 添加真实手臂/手与服装渲染副本，缺肢隐藏；视觉脚底
 - 游戏：`D:\SteamLibrary\steamapps\common\Casualties Unknown`，Steam build 26525321、Unity 2022.3.62f3、Mono/net48。
 - 必要依赖：BepInEx 5.4.23.6、CUCoreLib 1.1。现有构建参数、锁文件和路径见 `docs/REPOSITORY.md` 与本机 profile，不要另装未知版本。
 - 仅测试 `.local/cu-test/game`，用户数据 `.local/cu-test/userdata`。隔离校验游戏 11、CUCoreLib 3 处路径；unsafe path/prefs/achievement=0。
-- 正式目录 `C:\Users\42173\AppData\LocalLow\Orsoniks\CasualtiesUnknown`，本轮文件集合及 SHA-256 未变；基线 `.local/v044-formal-before.json`。正式 save.sv 哈希 `aad02cefd5c55dc68345fab7608e39a2dfa6a08b233453910b9a19a81a501fab`。下一轮仍要重新采集，不能把旧哈希当新证据。
+- 正式目录 `C:\Users\<user>\AppData\LocalLow\Orsoniks\CasualtiesUnknown`，本轮文件集合及 SHA-256 未变；基线 `.local/v044-formal-before.json`。正式 save.sv 哈希 `aad02cefd5c55dc68345fab7608e39a2dfa6a08b233453910b9a19a81a501fab`。下一轮仍要重新采集，不能把旧哈希当新证据。
 - v0.4.4 Mod/Probe 编译通过；Python 19 项、姿态 60 断言、钻掘 20 项、存档 6 项通过。
 - 实机自动化完成两手显示、平地双脚接地、缺手标记 2→1→2、97 部件构建、换装、再登机、保存；退出进程重启后恢复 Dominion 配置并再次完成脚本。
 - **不等同真实键鼠验收**：使用 ProbeInput/游戏方法。桌面工具虽然定位到 CasualtiesUnknown 窗口，截图却返回不相干游戏内容，本轮未据此输入。新会话需重新验证工具，不把历史上锁桌面的推测当事实。
